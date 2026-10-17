@@ -60,43 +60,98 @@ def fig_tasks(s):
     plt.close(fig)
 
 
+DEPTH = {"0": (BLUE, "0 own rollouts"), "1": (ORANGE, "1 own rollout"), "2+": (AQUA, "2 or more")}
+
+
+def _depth(n):
+    return "0" if n == 0 else "1" if n == 1 else "2+"
+
+
 def fig_calibration(s):
-    fig, ax = plt.subplots(figsize=(3.3, 3.0))
-    colors = {1: ORANGE, 2: BLUE}
-    for st in (1, 2):
-        rs = [r for r in s["tasks"] if r["stage"] == st]
-        ax.scatter([r["expected_q"] for r in rs], [r["q"] for r in rs], s=18, color=colors[st],
-                   edgecolors=SURFACE, linewidths=0.8, label=f"stage {st} ({len(rs)} tasks)", zorder=3)
+    own = {int(k): v for k, v in s["calibration_breakdown"]["own_dev_n"].items()}
+    fig, ax = plt.subplots(figsize=(3.3, 3.9))
+    for key, (color, _label) in DEPTH.items():
+        for st, filled in ((2, True), (1, False)):
+            rs = [r for r in s["tasks"] if _depth(own[r["id"]]) == key and r["stage"] == st]
+            # Deterministic jitter so the 29 zero-score tasks do not hide each other.
+            ys = [r["q"] if r["q"] > 0 else -0.012 * (1 + (r["id"] % 3)) for r in rs]
+            ax.scatter([r["expected_q"] for r in rs], ys, s=20, zorder=3, linewidths=1.0,
+                       facecolors=color if filled else SURFACE, edgecolors=color)
     ax.plot([0, 0.8], [0, 0.8], color=MUTED, linewidth=1.0, zorder=2)
-    ax.text(0.62, 0.66, "y = x", color=MUTED, fontsize=7, rotation=0)
+    ax.text(0.66, 0.70, "y = x", color=MUTED, fontsize=7)
     ax.set_xlim(0, 0.8)
-    ax.set_ylim(-0.02, 1.0)
+    ax.set_ylim(-0.05, 0.8)
+    ax.set_aspect("equal")
     ax.set_xlabel("Expected task score at freeze (posterior mean)")
     ax.set_ylabel("Realized task score")
     c = s["calibration"]
     ax.set_title(f"Spearman {c['spearman']:.2f} · mean {c['mean_expected']:.3f} → {c['mean_realized']:.3f}",
                  loc="left", fontsize=8, color=INK2)
-    ax.legend(loc="upper left", fontsize=7)
+    handles = [Line2D([], [], marker="o", linestyle="none", markersize=5, markerfacecolor=col,
+                      markeredgecolor=col, label=lab) for col, lab in DEPTH.values()]
+    handles += [Line2D([], [], marker="o", linestyle="none", markersize=5, markerfacecolor=SURFACE,
+                       markeredgecolor=INK2, label="stage 1 (hollow)")]
+    ax.legend(handles=handles, loc="upper center", fontsize=6.3, ncol=2, title="routed policy's own dev rollouts",
+              title_fontsize=6.3, bbox_to_anchor=(0.5, -0.2))
     fig.savefig(OUT / "calibration.pdf")
     plt.close(fig)
 
 
-def fig_policies(s):
-    ps = sorted(s["policies"], key=lambda p: p["task_points"])
-    fig, ax = plt.subplots(figsize=(3.3, 2.8))
-    y = range(len(ps))
-    ax.barh(y, [p["task_points"] for p in ps], height=0.62, color=[FAMILY[p["family"]] for p in ps], linewidth=0)
-    for i, p in enumerate(ps):
-        ax.text(p["task_points"] + 0.06, i, f"{p['tasks']} task{'s' if p['tasks'] != 1 else ''}",
-                va="center", fontsize=6.5, color=INK2)
-    ax.set_yticks(list(y))
-    ax.set_yticklabels([p["policy"].replace("comet@", "").replace("w100@", "") for p in ps], fontsize=7)
+def fig_simulation(s):
+    sim = s["simulation"]
+    order = ["reference only", "best dev mean", "best posterior", "strict rules (ours)", "oracle"]
+    names = {"reference only": "Reference only", "best dev mean": "Best raw dev mean",
+             "best posterior": "Best posterior", "strict rules (ours)": "Strict rules (ours)",
+             "oracle": "Oracle"}
+    fig, axes = plt.subplots(1, 2, figsize=(7.0, 2.6), gridspec_kw={"width_ratios": [1.25, 1]})
+    ax = axes[0]
+    for i, k in enumerate(order):
+        v = sim["rules"][k]
+        y = len(order) - 1 - i
+        ax.plot([v["true_p05"], v["true_p95"]], [y, y], color=BLUE, linewidth=2, alpha=0.35,
+                solid_capstyle="round")
+        ax.scatter([v["true"]], [y], s=28, color=BLUE, edgecolors=SURFACE, linewidths=1.0, zorder=3)
+        if v["claimed"] is not None and k != "oracle":
+            ax.scatter([v["claimed"]], [y], s=34, marker="D", facecolors=SURFACE, edgecolors=ORANGE,
+                       linewidths=1.3, zorder=4)
+            ax.annotate(f"claims {v['claimed']:.3f}", (v["claimed"], y), textcoords="offset points",
+                        xytext=(6, -2.5), fontsize=6.3, color=INK2)
+    obs = sim["observed"]
+    ax.axvline(obs["realized"], color=MUTED, linewidth=1, linestyle=(0, (2, 2)))
+    ax.text(obs["realized"] + 0.003, len(order) - 0.75, f"our reported score {obs['realized']:.3f}",
+            fontsize=6.3, color=INK2)
+    ax.set_yticks(range(len(order)))
+    ax.set_yticklabels([names[k] for k in reversed(order)], fontsize=7)
+    ax.set_ylim(-0.6, len(order) - 0.4)
+    ax.set_xlim(0.03, 0.36)
     ax.grid(axis="y", visible=False)
-    ax.set_xlim(0, max(p["task_points"] for p in ps) * 1.25)
-    ax.set_xlabel("Task points contributed (sum of task scores)")
-    handles = [Patch(color=FAMILY[k], label=v) for k, v in FAMILY_LABEL.items()]
-    ax.legend(handles=handles, loc="lower right", fontsize=6.5)
-    fig.savefig(OUT / "policies.pdf")
+    ax.set_xlabel("Mean task score on tasks 50–99")
+    ax.set_title(f"Rules in {sim['sims']} simulated worlds", loc="left")
+    handles = [Line2D([], [], marker="o", color=BLUE, linestyle="-", linewidth=2, alpha=0.8, markersize=5,
+                      label="true score (90% range)"),
+               Line2D([], [], marker="D", linestyle="none", markerfacecolor=SURFACE, markeredgecolor=ORANGE,
+                      markersize=5, label="score the rule claims")]
+    ax.legend(handles=handles, loc="upper center", fontsize=6.3, ncol=2, bbox_to_anchor=(0.5, -0.27))
+
+    ax = axes[1]
+    ms = sorted(sim["curve"], key=int)
+    xs = [int(m) for m in ms]
+    for k, col, lab in (("oracle", MUTED, "oracle"), ("best dev mean", ORANGE, "best raw dev mean"),
+                        ("strict rules (ours)", BLUE, "strict rules (ours)")):
+        ys = [sim["curve"][m][k]["true"] for m in ms]
+        lo = [sim["curve"][m][k]["true_p05"] for m in ms]
+        hi = [sim["curve"][m][k]["true_p95"] for m in ms]
+        ax.fill_between(xs, lo, hi, color=col, alpha=0.10, linewidth=0)
+        ax.plot(xs, ys, color=col, linewidth=2, marker="o", markersize=4, markeredgecolor=SURFACE, label=lab)
+    ax.set_xscale("log", base=2)
+    ax.set_xticks(xs)
+    ax.set_xticklabels([f"×{x}" for x in xs])
+    ax.set_xlabel("Development budget (× our ledger)")
+    ax.set_ylabel("True mean task score")
+    ax.set_title("Value of more development rollouts", loc="left")
+    ax.legend(loc="lower right", fontsize=6.3)
+    fig.tight_layout(w_pad=2.0)
+    fig.savefig(OUT / "simulation.pdf")
     plt.close(fig)
 
 
@@ -105,7 +160,8 @@ def fig_noise(s):
     ax = axes[0]
     h = s["q_histogram_deciles"]
     ax.bar([i / 10 + 0.05 for i in range(10)], h, width=0.075, color=BLUE, linewidth=0)
-    ax.set_xlabel("Episode score q")
+    ax.set_xticks([0, 0.2, 0.4, 0.6, 0.8, 1.0])
+    ax.set_xlabel("Episode score q (bins of 0.1)")
     ax.set_ylabel("Episodes")
     ax.set_title("Reported episodes (n = 1,000)", loc="left")
     ax.text(0.14, h[0] * 0.97, f"{h[0]} below 0.1", ha="left", va="top", color=INK2, fontsize=6.5)
@@ -113,28 +169,35 @@ def fig_noise(s):
     ax.grid(axis="x", visible=False)
 
     ax = axes[1]
-    inst = s["dev"]["instance_counts"]
+    inst = dict(s["dev"]["instance_counts"])
+    inst.setdefault("320", 0)
     ks = sorted(inst, key=int)
     ax.bar(range(len(ks)), [inst[k] for k in ks], width=0.6, color=BLUE, linewidth=0)
     ax.set_xticks(range(len(ks)))
     ax.set_xticklabels(ks, rotation=45, fontsize=6.5)
     ax.set_xlabel("Development instance")
     ax.set_ylabel("Rollouts")
-    ax.set_title(f"Dev rollouts ({s['dev']['share_instance_313']:.0%} on 313)", loc="left")
+    ax.set_title(f"Dev ledger ({s['dev']['share_instance_313']:.0%} on 313)", loc="left")
     ax.grid(axis="x", visible=False)
 
     ax = axes[2]
-    pw = s["power"]
+    pw, sel = s["power"], s["calibration_breakdown"]["selection_n"]
     xs = [float(k) for k in pw]
-    ys = [pw[k] for k in pw]
-    ax.plot(xs, ys, color=BLUE, linewidth=2, marker="o", markersize=4.5, markeredgecolor=SURFACE)
+    ax.plot(xs, [pw[k] for k in pw], color=BLUE, linewidth=2, marker="o", markersize=4.5,
+            markeredgecolor=SURFACE, label="significance test")
+    xs2 = [float(k) for k in sel]
+    ax.plot(xs2, [sel[k] for k in sel], color=ORANGE, linewidth=2, marker="o", markersize=4.5,
+            markeredgecolor=SURFACE, label="pick the better one")
     ax.set_yscale("log")
-    for x_, y_ in zip(xs, ys, strict=True):
-        ax.annotate(f"{y_:,}", (x_, y_), textcoords="offset points", xytext=(4, 3), fontsize=6.5, color=INK2)
-    ax.set_xlabel("Difference in task score to detect")
-    ax.set_ylabel("Rollouts per policy")
-    ax.set_title(f"80% power, s.d. {s['within_task_sd']:.2f}", loc="left")
+    for x_, y_ in zip(xs, [pw[k] for k in pw], strict=True):
+        ax.annotate(f"{y_:,}", (x_, y_), textcoords="offset points", xytext=(4, 3), fontsize=6.3, color=INK2)
+    for x_, y_ in zip(xs2, [sel[k] for k in sel], strict=True):
+        ax.annotate(f"{y_:,}", (x_, y_), textcoords="offset points", xytext=(4, -9), fontsize=6.3, color=INK2)
+    ax.set_xlabel("True difference in task score")
+    ax.set_ylabel("Rollouts per policy (log)")
+    ax.set_title(f"80% power / 80% correct, s.d. {s['within_task_sd']:.2f}", loc="left")
     ax.set_xlim(0, 0.23)
+    ax.legend(loc="upper right", fontsize=6.3)
     fig.tight_layout(w_pad=1.6)
     fig.savefig(OUT / "noise.pdf")
     plt.close(fig)
@@ -145,7 +208,7 @@ def main():
     s = load()
     fig_tasks(s)
     fig_calibration(s)
-    fig_policies(s)
+    fig_simulation(s)
     fig_noise(s)
     print("figures:", sorted(p.name for p in OUT.glob("*.pdf")))
 

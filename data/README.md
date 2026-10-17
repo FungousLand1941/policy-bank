@@ -7,7 +7,7 @@ identifiers and run directories are removed. Everything else is kept.
 |---|---|---|
 | `tasks.json` | 100 | id, name, scene, mean demonstration length (s), natural-language instruction |
 | `policies.json` | 10 | routed checkpoints: family, source repository, pinned revision, subfolder, replay length, lineage, licence status |
-| `route.json` | 100 | frozen route: policy, stage (1/2), posterior expected q at freeze, fallback and its expected q; SHA-256 of the original route tables |
+| `route.json` | 100 | frozen route: policy, stage (1/2), posterior expected q at freeze, fallback and its expected q; canonical SHA-256 of the route (`route_sha256`, see `policybank.routing.Route`) and SHA-256 of the original route tables |
 | `official_episodes.csv` | 1,000 | reported episodes (instances 301–310): q, success, steps, simulated seconds, normalized time, normalized arm/base distances, replay length, finish time (UTC), SHA-256 of the unchanged metrics file |
 | `dev_rollouts.csv` | 1,146 | development ledger (instances 311–319): run label, policy label, q, success, steps, normalized time, flags for evaluation-time variants and non-default robot configuration, finish time (UTC) |
 | `duplicates.json` | 2 | the two duplicate completed cells and the score-blind decision taken |
