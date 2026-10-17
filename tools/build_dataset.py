@@ -16,7 +16,8 @@ Expected raw layout (names as exported by the evaluation pipeline)::
     routes.frozen.json            frozen task -> policy mapping used by the run
     official7_episodes.tsv        episode index with the policy that produced it
     canonical/*.json              1,000 unchanged evaluator metric files
-    dev_all_live.tsv              every development rollout (instances 311-320)
+    dev_all_live.tsv              every development rollout (development instances; 311-319 in practice)
+    task_mapping_100.json         optional: BEHAVIOR task prompts, used where tasks_all.tsv has none
     duplicate-resolution.json     chronology decisions for the two duplicate cells
 """
 from __future__ import annotations
