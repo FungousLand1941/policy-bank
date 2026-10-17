@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "policybank"
+version = "1.0.0"
+description = "Development-selected routing of public robot policies for the BEHAVIOR-1K challenge"
+readme = "README.md"
+license = { text = "Apache-2.0" }
+requires-python = ">=3.10"
+authors = [
+  { name = "Keshav Balakrishna" },
+  { name = "Abhijay Gangerapu" },
+  { name = "Rithik Satarla" },
+]
+dependencies = ["numpy>=1.24", "msgpack>=1.0"]
+
+[project.optional-dependencies]
+serve = ["websockets>=13"]
+figures = ["matplotlib>=3.7"]
+dev = ["pytest>=7", "websockets>=13"]
+
+[project.scripts]
+policybank = "policybank.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["policybank*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

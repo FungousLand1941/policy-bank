@@ -1,0 +1,20 @@
+[
+ {
+  "task": "spraying_for_bugs",
+  "instance": 307,
+  "rule": "retain original chronological completed attempt; omit later completed duplicate regardless of Q",
+  "kept_q": 0.5,
+  "kept_sha256": "a56e841577bf792570893438e0d3df57bc4295364026268e05a32b67cc98f4a4",
+  "excluded_q": 0.0,
+  "excluded_sha256": "05aae6e16d5ef7ab7672648c1cb0ba107e9543bd77d8597cd76e96be0298cc40"
+ },
+ {
+  "task": "cook_brussels_sprouts",
+  "instance": 303,
+  "rule": "retain original chronological completed attempt; omit later completed duplicate regardless of Q",
+  "kept_q": 0.0,
+  "kept_sha256": "796aefef7c35bab585a4f592c2a6ce0908a6178ffa76665b7a35d0dbeaa93ef6",
+  "excluded_q": 0.0,
+  "excluded_sha256": "a661ab840e47f7ca2902eeb7c6c46b45bcdfa252a089cc39654588226a081479"
+ }
+]
