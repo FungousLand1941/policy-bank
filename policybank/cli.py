@@ -52,7 +52,7 @@ def cmd_analyze(a):
     from .analysis import summarize
     s = summarize()
     if a.out:
-        with open(a.out, "w", encoding="utf-8") as f:
+        with open(a.out, "w", encoding="utf-8", newline="\n") as f:
             json.dump(s, f, indent=1, default=float)
         print(f"wrote {a.out}")
     else:

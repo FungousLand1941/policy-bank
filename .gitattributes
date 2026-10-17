@@ -1,1 +1,4 @@
+* text=auto eol=lf
+*.pdf binary
+*.png binary
 data/metrics/*.json -text

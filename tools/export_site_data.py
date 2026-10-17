@@ -65,7 +65,7 @@ def main():
     out = {
         "generated_from": "data/ via tools/export_site_data.py",
         "headline": {
-            "Q": r(s["Q"], 5), "Q_ci95": [r(x, 4) for x in s["Q_ci95"]], "episodes": s["episodes"],
+            "Q": r(s["Q"], 5), "Q_ci95": [r(x, 6) for x in s["Q_ci95"]], "episodes": s["episodes"],
             "successes": s["successes"], "nonzero_tasks": s["nonzero_tasks"], "zero_tasks": s["zero_tasks"],
             "tasks_with_success": s["tasks_with_success"], "episodes_nonzero": s["episodes_nonzero"],
             "within_task_sd": r(s["within_task_sd"], 3), "dev_rollouts": s["dev"]["rollouts"],
@@ -109,12 +109,12 @@ def main():
                      "stage2_table_sha256": route["stage2_table_sha256"],
                      "route_canonical_sha256": __import__("policybank.routing", fromlist=["Route"]).Route
                      .from_json(route).sha256, "stage2_frozen_utc": route["stage2_frozen_utc"]}
-    (site / "results.json").write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    (site / "results.json").write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")), encoding="utf-8", newline="\n")
     res = ROOT / "results"
     res.mkdir(exist_ok=True)
     s_out = dict(s)
     (res / "summary.json").write_text(json.dumps(s_out, indent=1, default=float, ensure_ascii=False) + "\n",
-                                      encoding="utf-8")
+                                      encoding="utf-8", newline="\n")
     print(f"site/data/results.json  {len(tasks)} tasks, {len(out['policies'])} policies")
 
 

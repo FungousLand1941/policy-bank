@@ -2,7 +2,8 @@
 """Pre-render the project page from site/data/results.json.
 
 Writes every bound number (elements carrying data-bind / data-fmt) and the generated
-blocks (<!-- prerender:NAME --> ... <!-- /prerender:NAME -->) into site/index.html as
+blocks (<!-- prerender:NAME --> ... <!-- /prerender:NAME -->) and the content of <meta>
+tags that carry a data-tpl template ("{path|fmt}" placeholders) into site/index.html as
 static text, so the page reads correctly without JavaScript and for crawlers. app.js
 re-binds the same values at runtime with the same formatters; keep fmt(), resolve(),
 the colour mapping and the card / sentence templates in sync with site/app.js.

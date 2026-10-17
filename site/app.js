@@ -37,6 +37,7 @@
   /* ---------- shared formatting (mirrors tools/prerender_site.py) ---------- */
   const MINUS = '−';
   const fixed = (v, d) => { const t = (+v).toFixed(d); return t[0] === '-' ? MINUS + t.slice(1) : t; };
+  const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   function fmt(v, f) {
     switch (f) {
       case 'int': return Math.round(v).toLocaleString('en-US');
@@ -44,9 +45,14 @@
       case 'pct0': return Math.round(v * 100) + '%';
       case 'pct1': return fixed(v * 100, 1) + '%';
       case 'sp1': return (v >= 0 ? '+' : MINUS) + Math.abs(v).toFixed(1);
+      case 'sp2': return (v >= 0 ? '+' : MINUS) + Math.abs(v).toFixed(2);
       case 'x100f1': return fixed(v * 100, 1);
       case 'ord': { const n = Math.round(v * 100), t = n % 100; return n + (t >= 11 && t <= 13 ? 'th' : ({ 1: 'st', 2: 'nd', 3: 'rd' }[n % 10] || 'th')); }
       case 'utc': { const m = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/.exec(v); return m ? `${m[1]} at ${m[2]} UTC` : String(v); }
+      case 'utcday': {
+        const m = /^\d{4}-(\d{2})-(\d{2})T(\d{2}:\d{2})/.exec(v);
+        return m ? `${m[3]} UTC on ${+m[2]} ${MONTHS[+m[1] - 1]}` : String(v);
+      }
       default: return String(v);
     }
   }
@@ -102,6 +108,7 @@
   const depth = t => Math.min(t.own_dev_n || 0, 2);
   const dcol = t => `var(--d${depth(t)})`;
   const FAMILY = { comet: 'comet', winner: 'winner', winner100: 'winner-format specialist' };
+  const REFERENCE = 's150997';   // the weak reference policy, incumbent on tasks 50-99
   const FAMVAR = { comet: 'comet', winner: 'winner', winner100: 'w100' };
   /* Rank within family (tasks, then task points) -> lightness step of the family ramp. */
   const STEPS = { 2: [1, 0], 4: [2, 0, 3, 1] };
@@ -180,7 +187,7 @@
       else if (k === 'Home') { e.preventDefault(); set(0, null, null, true); }
       else if (k === 'End') { e.preventDefault(); set(n - 1, null, null, true); }
       else if (k === 'Escape') set(-1);
-      else if (k === 'Enter' && idx >= 0 && onActivate) onActivate(items[idx]);
+      else if (k === 'Enter' && idx >= 0 && onActivate) { e.preventDefault(); onActivate(items[idx]); }
     });
     svg.addEventListener('focus', () => { if (idx < 0 && svg.matches(':focus-visible')) set(0, null, null, true); });
     svg.addEventListener('blur', () => set(-1));
@@ -286,7 +293,7 @@
       { n: 'STEP 1', t: 'Public checkpoints', l: [hd ? `${hd.policies_routed} routed; ${hd.policies_tested} labels tested` : 'ten routed checkpoints', 'Comet π0.5, 2025 winner, specialists, ours'] },
       { n: 'STEP 2', t: 'Development rollouts', l: ['instances 311–320', hd ? `${fint(hd.dev_rollouts)} in the ledger, ${fint(hd.dev_eligible)} eligible` : 'development ledger'] },
       { n: 'STEP 3', t: 'Empirical-Bayes posterior', l: ['per (task, policy)', 'reference prior + own rollouts'] },
-      { n: 'STEP 4', t: 'Switching rules', l: ['≥ 2 own rollouts, guard (0–49)', 'gain ≥ 0.01 · veto', 'scope, one per family (50–99)'], k: 'core' },
+      { n: 'STEP 4', t: 'Switching rules', l: ['≥ 2 own rollouts, guard (0–49)', 'gain ≥ 0.01 · veto', 'scope, one per training run (50–99)'], k: 'core' },
       { n: 'STEP 5', t: 'Frozen route', l: ['one policy per task', 'hashed with SHA-256'] },
       { n: 'STEP 6', t: 'One evaluation', l: ['public instances 301–310', hd ? `${fint(hd.episodes)} episodes, Q = ${f3(hd.Q)}` : 'run once'], k: 'eval' },
       { n: 'STEP 7', t: 'Hidden test', l: ['instances 321–340', 'run by the organizers'], k: 'ext' },
@@ -456,7 +463,7 @@
     Object.assign(st, { stage: 'all', scene: 'all', q: '', sort: 'q' }); st.pol.clear();
   }
   function syncControls() {
-    $('#fPolicies').classList.toggle('sel', st.pol.size > 0);
+    $('#fPolicies').classList.toggle('has-sel', st.pol.size > 0);
     $$('#fPolicies .chip').forEach(c => c.setAttribute('aria-pressed', String(st.pol.has(c.dataset.p))));
     $$('.seg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.stage === st.stage)));
     $('#fScene').value = st.scene; $('#fSort').value = st.sort;
@@ -475,8 +482,9 @@
     if (st.scene !== 'all') p.set('scene', st.scene);
     if (st.q.trim()) p.set('q', st.q.trim());
     if (st.sort !== 'q') p.set('sort', st.sort);
-    const qs = p.toString();
-    try { history.replaceState(null, '', location.pathname + (qs ? '?' + qs : '') + location.hash); } catch (e) { /* file:// or sandbox */ }
+    const qs = p.toString(), m = /^#task-(\d+)$/.exec(location.hash);
+    const hash = m && !CUR.includes(TASK[+m[1]]) ? '' : location.hash;   // drop a stale task link
+    try { history.replaceState(null, '', location.pathname + (qs ? '?' + qs : '') + hash); } catch (e) { /* file:// or sandbox */ }
   }
   function readURL() {
     const p = new URLSearchParams(location.search);
@@ -601,7 +609,8 @@
           dt('95% interval', `${f3(t.q_ci95[0])}–${f3(t.q_ci95[1])}`), dt('Fallback recorded at freeze', fb)),
         h('div', { class: 'iv' }, t.qs.map((v, i) => h('span', null, `${301 + i} `, h('b', { text: f2(v) }))))),
       h('div', null,
-        h('div', { class: 'lbl', text: `Development evidence · ${totalN} rollout${totalN === 1 ? '' : 's'}` }),
+        h('div', { class: 'lbl', text: `Development evidence at freeze · ${totalN} rollout${totalN === 1 ? '' : 's'}` }),
+        t.dev_after_freeze > 0 ? h('p', { class: 'mini-note', text: `+${t.dev_after_freeze} later rollout${t.dev_after_freeze === 1 ? '' : 's'} not used` }) : null,
         devs.length ? h('table', { class: 'mini' },
           h('thead', null, h('tr', null, h('th', { scope: 'col', text: 'Checkpoint' }), h('th', { scope: 'col', class: 'n', text: 'n' }), h('th', { scope: 'col', class: 'n', text: 'mean q' }))),
           h('tbody', null, devs.map(([p, v]) => h('tr', { class: p === t.policy ? 'rt' : null },
@@ -610,7 +619,7 @@
               p === t.policy ? h('span', { class: 'tag', text: 'routed' }) : null,
               p === t.fallback && p !== t.policy ? h('span', { class: 'tag', text: 'fallback' }) : null)),
             h('td', { class: 'n', text: v.n }), h('td', { class: 'n', text: f3(v.mean) }))))) : null,
-        t.dev[t.policy] ? null : h('p', { class: 'mini-note', text: 'The routed checkpoint has no development rollouts on this task.' }),
+        t.dev[t.policy] ? null : h('p', { class: 'mini-note', text: 'The routed checkpoint had no development rollouts on this task at freeze.' }),
         h('p', { class: 'mini-note', text: 'Labels without a display name were tested in development but not routed.' })))));
   }
   function setHash(hash) { try { history.replaceState(null, '', location.pathname + location.search + hash); } catch (e) { /* ignore */ } }
@@ -878,8 +887,14 @@
   function disagreeText() {
     const R = D.reproduction;
     if (!R || !R.disagreements.length) return '';
-    const items = R.disagreements.map(d => `task ${d.task_id} (${TASK[d.task_id] ? TASK[d.task_id]._name.toLowerCase() : ''}), where it prefers ${pname(d.ours)}, posterior ${f3(d.posterior_ours)}, and the frozen route chose ${pname(d.frozen)}, posterior ${f3(d.posterior_frozen)}`);
-    return `It disagrees on ${items.join('; and on ')}.`;
+    const parts = R.disagreements.map(d => {
+      const a = f3(d.posterior_ours), b = f3(d.posterior_frozen), diff = Math.abs(d.posterior_ours - d.posterior_frozen);
+      if (diff < 0.01) return `task ${d.task_id} is a near tie (${a} vs ${b})`;
+      const who = d.ours === REFERENCE ? 'the reference' : pname(d.ours);
+      return `on task ${d.task_id} the reimplementation prefers ${who} by ${f2(diff)} (${a} vs ${b})`;
+    });
+    const n = parts.length, words = { 1: 'one', 2: 'two', 3: 'three', 4: 'four', 5: 'five' };
+    return n === 1 ? `In the one disagreement, ${parts[0]}.` : `Of the ${words[n] || n} disagreements, ${parts.join('; ')}.`;
   }
   function tables() {
     const hs = D.histogram, dv = D.dev_instances, sel = D.breakdown.selection_n;

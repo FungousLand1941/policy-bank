@@ -90,6 +90,7 @@ sup.dag { font-size: 0.7em; margin-left: 1px; }
 .nav a { color: var(--ink-2); text-decoration: none; font-size: 0.86rem; padding: 6px 8px; border-radius: 6px; white-space: nowrap; }
 .nav a:hover { color: var(--ink); background: var(--surface-2); }
 .nav a[aria-current] { color: var(--ink); background: var(--surface-2); }
+.nav a:focus-visible, .seg button:focus-visible { outline-offset: -2px; }
 .theme-btn { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--ink); cursor: pointer; }
 .theme-btn:hover { background: var(--surface-2); }
 .theme-btn g { display: none; }
@@ -279,7 +280,8 @@ html:not(.js) .filters, .filters[hidden] { display: none; }
 .chip { display: inline-flex; align-items: center; gap: 6px; min-height: 30px; padding: 0 10px; border: 1px solid var(--border); border-radius: 999px; background: var(--bg); color: var(--ink-2); font: 0.8rem var(--sans); cursor: pointer; max-width: 100%; }
 .chip .ct { color: var(--muted); font-variant-numeric: tabular-nums; }
 .chip[aria-pressed="true"] { border-color: var(--ink); color: var(--ink); background: var(--surface-2); font-weight: 500; }
-.chips.sel .chip[aria-pressed="false"] { opacity: 0.6; }
+.chips.has-sel .chip[aria-pressed="false"] { color: var(--muted); }
+.chips.has-sel .chip[aria-pressed="false"] .sw { opacity: 0.35; }
 .summary { font-size: 0.88rem; color: var(--ink-2); margin: 12px 0 0; min-height: 1.5em; }
 .heat-legend { display: flex; align-items: center; gap: 6px; justify-content: flex-end; font-size: 0.78rem; color: var(--ink-2); margin-top: 8px; }
 .heat-legend span:first-child { margin-right: 4px; }
@@ -328,6 +330,8 @@ details.dt table { margin-top: 8px; }
 #optTable { margin-top: 14px; }
 
 /* Simulation */
+.findings { margin: 24px 0 0; padding-left: 22px; max-width: 860px; }
+.findings li { margin: 6px 0; }
 .callout { margin-top: 24px; padding: 16px 18px; border: 1px solid var(--border); border-left: 3px solid var(--ink); border-radius: 8px; background: var(--surface); max-width: 860px; }
 .callout p:last-child { margin-bottom: 0; }
 .callout p + p { color: var(--ink-2); font-size: 0.94rem; }
@@ -357,6 +361,9 @@ details.dt table { margin-top: 8px; }
 .codebox pre { margin: 0; padding: 14px 16px; font: 0.8rem/1.6 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; }
 .codebox pre code { background: none; padding: 0; font-size: inherit; }
 html:not(.js) .copy { display: none; }
+html:not(.js) .chart, html:not(.js) .diagram, html:not(.js) .fig-tools, html:not(.js) details.dt, html:not(.js) .sel,
+html:not(.js) #selector .note, html:not(.js) .fig .legend, html:not(.js) .table-wrap,
+html:not(.js) .heat-legend, html:not(.js) #exSummary, html:not(.js) .more { display: none; }
 .foot { border-top: 1px solid var(--grid); padding: 28px 0 40px; color: var(--ink-2); font-size: 0.86rem; }
 .foot-in { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; }
 .foot p { margin: 0; }

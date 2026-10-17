@@ -274,8 +274,8 @@ def main():
     dev = parse_dev(a.raw, tasks)
     dup = json.loads((a.raw / "duplicate-resolution.json").read_text())
 
-    (a.out / "tasks.json").write_text(json.dumps(tasks, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
-    (a.out / "policies.json").write_text(json.dumps(POLICIES, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    (a.out / "tasks.json").write_text(json.dumps(tasks, indent=1, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
+    (a.out / "policies.json").write_text(json.dumps(POLICIES, indent=1, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
     (a.out / "route.json").write_text(json.dumps({
         "schema": "policy-bank-route/1",
         "stage2_frozen_utc": STAGE2_FROZEN_UTC,
@@ -284,14 +284,14 @@ def main():
         "stage1_table_sha256": source["route_sha256"],
         "stage2_table_sha256": source["route2_sha256"],
         "tasks": route,
-    }, indent=1) + "\n", encoding="utf-8")
+    }, indent=1) + "\n", encoding="utf-8", newline="\n")
     write_csv(a.out / "official_episodes.csv", official)
     write_csv(a.out / "dev_rollouts.csv", dev)
     (a.out / "duplicates.json").write_text(json.dumps([{
         "task": d["task"], "instance": d["instance"], "rule": d["rule"],
         "kept_q": d["kept"]["q"], "kept_sha256": d["kept"]["sha256"],
         "excluded_q": d["excluded"]["q"], "excluded_sha256": d["excluded"]["sha256"],
-    } for d in dup["decisions"]], indent=1) + "\n", encoding="utf-8")
+    } for d in dup["decisions"]], indent=1) + "\n", encoding="utf-8", newline="\n")
 
     q = sum(r["q"] for r in official) / len(official)
     print(f"tasks={len(tasks)} official={len(official)} dev={len(dev)} Q={q:.17g}")
