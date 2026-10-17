@@ -4,113 +4,164 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Policy Bank · BEHAVIOR-1K</title>
-<meta name="description" content="Team KANR's technical report for the 2026 BEHAVIOR Challenge: ten public and lightly fine-tuned robot policies, each task routed to one of them using development rollouts only. Q = 0.156 on the public reporting instances.">
+<meta name="description" content="Team KANR's technical report for the 2026 BEHAVIOR Challenge: ten vision-language-action checkpoints, each task routed to one of them using development rollouts only. Q = 0.156 on the public reporting instances.">
+<link rel="canonical" href="https://policy-bank.vercel.app/">
 <meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#fbfbf9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f0f0e" media="(prefers-color-scheme: dark)">
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="Policy Bank">
+<meta property="og:url" content="https://policy-bank.vercel.app/">
 <meta property="og:title" content="Policy Bank: Development-Selected Routing of Public Robot Policies for BEHAVIOR-1K">
-<meta property="og:description" content="Team KANR · 2026 BEHAVIOR Challenge technical report. A bank of ten vision-language-action checkpoints, one routed per task from development rollouts only. Q = 0.156 (95% CI 0.144–0.168) over 1,000 public-instance episodes.">
-<meta name="twitter:card" content="summary">
+<meta property="og:description" content="Team KANR · 2026 BEHAVIOR Challenge technical report. Ten vision-language-action checkpoints, one routed per task from development rollouts only. Q = 0.156 (95% CI 0.144–0.168) over 1,000 public-instance episodes.">
+<meta property="og:image" content="https://policy-bank.vercel.app/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Policy Bank title card: 100 BEHAVIOR-1K tasks ranked by realized score, Q = 0.156">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Policy Bank: Development-Selected Routing of Public Robot Policies for BEHAVIOR-1K">
-<meta name="twitter:description" content="Ten public robot policies, one routed per task from development rollouts only. Q = 0.156 on BEHAVIOR-1K public instances.">
+<meta name="twitter:description" content="Ten robot policies, one routed per task from development rollouts only. Q = 0.156 on BEHAVIOR-1K public instances.">
+<meta name="twitter:image" content="https://policy-bank.vercel.app/og.png">
+<meta name="citation_title" content="Policy Bank: Development-Selected Routing of Public Robot Policies for BEHAVIOR-1K">
+<meta name="citation_author" content="Balakrishna, Keshav">
+<meta name="citation_author" content="Gangerapu, Abhijay">
+<meta name="citation_author" content="Satarla, Rithik">
+<meta name="citation_publication_date" content="2026/10/17">
+<meta name="citation_technical_report_institution" content="Team KANR (Independent)">
+<meta name="citation_pdf_url" content="https://policy-bank.vercel.app/paper.pdf">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Source+Serif+4:opsz,wght@8..60,600&display=swap">
 <link rel="stylesheet" href="styles.css">
-<script>try{var t=localStorage.getItem('pb-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script>try{var t=localStorage.getItem('pb-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}document.documentElement.className+=' js';</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ScholarlyArticle",
+  "headline": "Policy Bank: Development-Selected Routing of Public Robot Policies for BEHAVIOR-1K",
+  "name": "Policy Bank: Development-Selected Routing of Public Robot Policies for BEHAVIOR-1K",
+  "author": [
+    {"@type": "Person", "name": "Keshav Balakrishna", "affiliation": {"@type": "Organization", "name": "Independent"}},
+    {"@type": "Person", "name": "Abhijay Gangerapu", "affiliation": {"@type": "Organization", "name": "Independent"}},
+    {"@type": "Person", "name": "Rithik Satarla", "affiliation": {"@type": "Organization", "name": "Independent"}}
+  ],
+  "publisher": {"@type": "Organization", "name": "Team KANR"},
+  "datePublished": "2026-10-17",
+  "url": "https://policy-bank.vercel.app/",
+  "image": "https://policy-bank.vercel.app/og.png",
+  "keywords": ["BEHAVIOR-1K", "robot learning", "vision-language-action models", "policy selection", "empirical Bayes"],
+  "description": "Team KANR's technical report for the 2026 BEHAVIOR Challenge. Ten vision-language-action checkpoints, one routed per task from development rollouts only; Q = 0.156 on the public reporting instances.",
+  "encoding": {"@type": "MediaObject", "contentUrl": "https://policy-bank.vercel.app/paper.pdf", "encodingFormat": "application/pdf"}
+}
+</script>
 <script src="app.js" defer></script>
 </head>
 <body>
-<a class="skip" href="#abstract">Skip to content</a>
+<a class="skip" href="#main">Skip to content</a>
 
 <header class="topbar">
   <div class="wrap topbar-in">
-    <a class="brand" href="#top" aria-label="Policy Bank, back to top">
-      <img src="favicon.svg" alt="" width="18" height="18">Policy Bank
-    </a>
-    <nav class="nav" aria-label="Sections">
+    <a class="brand" href="#top"><img src="favicon.svg" alt="" width="18" height="18">Policy Bank</a>
+    <nav class="nav" id="nav" aria-label="Sections">
       <a href="#method">Method</a>
       <a href="#selector">Selector</a>
       <a href="#bank">Bank</a>
       <a href="#results">Results</a>
       <a href="#analysis">Analysis</a>
+      <a href="#simulation">Simulation</a>
       <a href="#serving">Serving</a>
+      <a href="#reproduce">Reproduce</a>
       <a href="#disclosures">Disclosures</a>
       <a href="#cite">Cite</a>
     </nav>
-    <button class="theme-btn" id="themeBtn" type="button" aria-label="Switch to dark theme">
-      <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><circle cx="10" cy="10" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 3.5a6.5 6.5 0 0 1 0 13z" fill="currentColor"/></svg>
+    <button class="theme-btn" id="themeBtn" type="button" aria-label="Theme: follow system. Switch to light.">
+      <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
+        <g class="ic-sys"><circle cx="10" cy="10" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 3.5a6.5 6.5 0 0 1 0 13z" fill="currentColor"/></g>
+        <g class="ic-light"><circle cx="10" cy="10" r="3.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 1.8v2.4M10 15.8v2.4M1.8 10h2.4M15.8 10h2.4M4.2 4.2l1.7 1.7M14.1 14.1l1.7 1.7M4.2 15.8l1.7-1.7M14.1 5.9l1.7-1.7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></g>
+        <g class="ic-dark"><path d="M15.5 12.6A6.5 6.5 0 0 1 7.4 4.5a6.5 6.5 0 1 0 8.1 8.1z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></g>
+      </svg>
     </button>
   </div>
 </header>
 
-<main id="top">
-  <!-- 1. Hero -->
-  <section class="hero">
-    <div class="wrap">
-      <p class="kicker">Team KANR · 2026 BEHAVIOR Challenge · technical report</p>
-      <h1>Policy Bank: Development-Selected Routing of Public Robot Policies for BEHAVIOR-1K</h1>
-      <p class="authors">Keshav Balakrishna, Abhijay Gangerapu, Rithik Satarla</p>
-      <p class="affil">Independent</p>
-      <div class="links">
-        <a class="btn" href="paper.pdf"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 1.5h5l3.5 3.5v9.5h-8.5z M9 1.5V5h3.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>Paper</a>
-        <a class="btn" href="https://github.com/FungousLand1941/policy-bank"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5.5 4.5 2 8l3.5 3.5M10.5 4.5 14 8l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Code</a>
-        <a class="btn" href="https://github.com/FungousLand1941/policy-bank/tree/main/data"><svg viewBox="0 0 16 16" aria-hidden="true"><ellipse cx="8" cy="3.8" rx="5.5" ry="2" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M2.5 3.8v8.4c0 1.1 2.5 2 5.5 2s5.5-.9 5.5-2V3.8M2.5 8c0 1.1 2.5 2 5.5 2s5.5-.9 5.5-2" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>Data</a>
-        <a class="btn" href="https://behavior.stanford.edu/challenge/"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 3H3v10h10V9.5M9 2h5v5M14 2 7.5 8.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>BEHAVIOR Challenge</a>
+<main id="main" tabindex="-1">
+  <!-- Hero -->
+  <section class="hero" id="top">
+    <div class="wrap hero-grid">
+      <div class="hero-text">
+        <p class="kicker">Team KANR · 2026 BEHAVIOR Challenge · technical report</p>
+        <h1>Policy Bank: Development-Selected Routing of Public Robot Policies for BEHAVIOR-1K</h1>
+        <p class="authors">Keshav Balakrishna, Abhijay Gangerapu, Rithik Satarla</p>
+        <p class="affil">Independent</p>
+        <div class="links">
+          <a class="btn" href="paper.pdf"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 1.5h5l3.5 3.5v9.5h-8.5z M9 1.5V5h3.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>Paper</a>
+          <a class="btn" href="https://github.com/FungousLand1941/policy-bank"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5.5 4.5 2 8l3.5 3.5M10.5 4.5 14 8l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Code</a>
+          <a class="btn" href="https://github.com/FungousLand1941/policy-bank/tree/main/data"><svg viewBox="0 0 16 16" aria-hidden="true"><ellipse cx="8" cy="3.8" rx="5.5" ry="2" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M2.5 3.8v8.4c0 1.1 2.5 2 5.5 2s5.5-.9 5.5-2V3.8M2.5 8c0 1.1 2.5 2 5.5 2s5.5-.9 5.5-2" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>Data</a>
+          <a class="btn" href="https://behavior.stanford.edu/challenge/"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 3H3v10h10V9.5M9 2h5v5M14 2 7.5 8.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>BEHAVIOR Challenge</a>
+        </div>
       </div>
-      <dl class="tiles" aria-label="Key numbers">
+      <figure class="teaser">
+        <!-- prerender:teaser --><svg viewBox="0 0 460 300" role="img" aria-label="Schematic: a bank of 10 checkpoints feeds a per-task router; each of the 100 tasks runs one checkpoint; Q = 0.156." xmlns="http://www.w3.org/2000/svg"><text class="tz-head" x="0" y="12">Bank · 10 checkpoints</text><text class="tz-head" x="302" y="48">100 tasks</text><path class="tz-edge" d="M164,33 C182,33 180,144.0 196,144.0"/><rect x="0" y="24" width="160" height="19" rx="4" style="fill:var(--surface);stroke:var(--border)"/><rect x="6" y="29" width="9" height="9" rx="2" style="fill:var(--comet-2)"/><text class="tz-lab" x="21" y="37.5">ymetz pt50 step 9999</text><path class="tz-edge" d="M164,59 C182,59 180,144.0 196,144.0"/><rect x="0" y="50" width="160" height="19" rx="4" style="fill:var(--surface);stroke:var(--border)"/><rect x="6" y="55" width="9" height="9" rx="2" style="fill:var(--comet-0)"/><text class="tz-lab" x="21" y="63.5">Comet π0.5 pt50</text><path class="tz-edge" d="M164,85 C182,85 180,144.0 196,144.0"/><rect x="0" y="76" width="160" height="19" rx="4" style="fill:var(--surface);stroke:var(--border)"/><rect x="6" y="81" width="9" height="9" rx="2" style="fill:var(--comet-3)"/><text class="tz-lab" x="21" y="89.5">pt50 + 2026 demos (ours)</text><path class="tz-edge" d="M164,111 C182,111 180,144.0 196,144.0"/><rect x="0" y="102" width="160" height="19" rx="4" style="fill:var(--surface);stroke:var(--border)"/><rect x="6" y="107" width="9" height="9" rx="2" style="fill:var(--comet-1)"/><text class="tz-lab" x="21" y="115.5">Comet π0.5 pt12</text><path class="tz-edge" d="M164,137 C182,137 180,144.0 196,144.0"/><rect x="0" y="128" width="160" height="19" rx="4" style="fill:var(--surface);stroke:var(--border)"/><rect x="6" y="133" width="9" height="9" rx="2" style="fill:var(--winner-2)"/><text class="tz-lab" x="21" y="141.5">2025 winner ckpt 1</text><path class="tz-edge" d="M164,163 C182,163 180,144.0 196,144.0"/><rect x="0" y="154" width="160" height="19" rx="4" style="fill:var(--surface);stroke:var(--border)"/><rect x="6" y="159" width="9" height="9" rx="2" style="fill:var(--winner-0)"/><text class="tz-lab" x="21" y="167.5">2025 winner ckpt 2</text><path class="tz-edge" d="M164,189 C182,189 180,144.0 196,144.0"/><rect x="0" y="180" width="160" height="19" rx="4" style="fill:var(--surface);stroke:var(--border)"/><rect x="6" y="185" width="9" height="9" rx="2" style="fill:var(--winner-3)"/><text class="tz-lab" x="21" y="193.5">2025 winner ckpt 3</text><path class="tz-edge" d="M164,215 C182,215 180,144.0 196,144.0"/><rect x="0" y="206" width="160" height="19" rx="4" style="fill:var(--surface);stroke:var(--border)"/><rect x="6" y="211" width="9" height="9" rx="2" style="fill:var(--winner-1)"/><text class="tz-lab" x="21" y="219.5">2025 winner ckpt 4</text><path class="tz-edge" d="M164,241 C182,241 180,144.0 196,144.0"/><rect x="0" y="232" width="160" height="19" rx="4" style="fill:var(--surface);stroke:var(--border)"/><rect x="6" y="237" width="9" height="9" rx="2" style="fill:var(--w100-1)"/><text class="tz-lab" x="21" y="245.5">JackLiu 4-task specialist</text><path class="tz-edge" d="M164,267 C182,267 180,144.0 196,144.0"/><rect x="0" y="258" width="160" height="19" rx="4" style="fill:var(--surface);stroke:var(--border)"/><rect x="6" y="263" width="9" height="9" rx="2" style="fill:var(--w100-0)"/><text class="tz-lab" x="21" y="271.5">amyjia specialist (t90)</text><rect class="tz-router" x="196" y="118" width="78" height="52" rx="8"/><text class="tz-rt" x="235.0" y="140" text-anchor="middle">router</text><text class="tz-lab" x="235.0" y="156" text-anchor="middle">one per task</text><path class="tz-edge" d="M274,144.0 H294" marker-end="url(#tz-ah)"/><defs><marker id="tz-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--axis)"/></marker></defs><rect x="302" y="58" width="13" height="13" rx="2" style="fill:var(--comet-1)"><title>Task 0: turning on radio, q 0.50</title></rect><rect x="317" y="58" width="13" height="13" rx="2" style="fill:var(--winner-0)"><title>Task 1: picking up trash, q 0.33</title></rect><rect x="332" y="58" width="13" height="13" rx="2" style="fill:var(--comet-0)"><title>Task 2: putting away halloween decorations, q 0.19</title></rect><rect x="347" y="58" width="13" height="13" rx="2" style="fill:var(--comet-0)"><title>Task 3: cleaning up plates and food, q 0.04</title></rect><rect x="362" y="58" width="13" height="13" rx="2" style="fill:var(--winner-3)"><title>Task 4: can meat, q 0.04</title></rect><rect x="377" y="58" width="13" height="13" rx="2" style="fill:var(--winner-2)"><title>Task 5: setting mousetraps, q 0.33</title></rect><rect x="392" y="58" width="13" height="13" rx="2" style="fill:var(--comet-0)"><title>Task 6: hiding easter eggs, q 0.08</title></rect><rect x="407" y="58" width="13" height="13" rx="2" style="fill:var(--comet-0)"><title>Task 7: picking up toys, q 0.20</title></rect><rect x="422" y="58" width="13" height="13" rx="2" style="fill:var(--comet-0)"><title>Task 8: rearranging kitchen furniture, q 0.05</title></rect><rect x="437" y="58" width="13" height="13" rx="2" style="fill:var(--comet-1)"><title>Task 9: putting up christmas decorations inside, q 0.44</title></rect><rect x="302" y="73" width="13" height="13" rx="2" style="fill:var(--comet-0)"><title>Task 10: set up a coffee station in your kitchen, q 0.13</title></rect><rect x="317" y="73" width="13" height="13" rx="2" style="fill:var(--comet-0)"><title>Task 11: putting dishes away after cleaning, q 0.16</title></rect><rect x="332" y="73" width="13" height="13" rx="2" style="fill:var(--winner-0)"><title>Task 12: preparing lunch box, q 0.40</title></rect><rect x="347" y="73" width="13" height="13" rx="2" style="fill:var(--winner-2)"><title>Task 13: loading the car, q 0.03</title></rect><rect x="362" y="73" width="13" height="13" rx="2" style="fill:var(--winner-2)"><title>Task 14: carrying in groceries, q 0.23</title></rect><rect x="377" y="73" width="13" height="13" rx="2" style="fill:var(--comet-0)"><title>Task 15: bringing in wood, q 0.07</title></rect><rect x="392" y="73" width="13" height="13" rx="2" style="fill:var(--comet-0)"><title>Task 16: moving boxes to storage, q 0.45</title></rect><rect x="407" y="73" width="13" height="13" rx="2" style="fill:var(--comet-0)"><title>Task 17: bringing water, q 0.23</title></rect><rect x="422" y="73" width="13" height="13" rx="2" style="fill:var(--winner-0)"><title>Task 18: tidying bedroom, q 0.20</title></rect><rect x="437" y="73" width="13" height="13" rx="2" style="fill:var(--winner-2)"><title>Task 19: outfit a basic toolbox, q 0.01</title></rect><rect x="302" y="88" width="13" height="13" rx="2" style="fill:var(--winner-0)"><title>Task 20: sorting vegetables, q 0.44</title></rect><rect x="317" y="88" width="13" height="13" rx="2" style="fill:var(--comet-0)"><title>Task 21: collecting childrens toys, q 0.47</title></rect><rect x="332" y="88" width="13" height="13" rx="2" style="fill:var(--comet-0)"><title>Task 22: putting shoes on rack, q 0.33</title></rect><rect x="347" y="88" width="13" height="13" rx="2" style="fill:var(--comet-0)"><title>Task 23: boxing books up for storage, q 0.00</title></rect><rect x="362" y="88" width="13" height="13" rx="2" style="fill:var(--comet-0)"><title>Task 24: storing food, q 0.51</title></rect><rect x="377" y="88" width="13" height="13" rx="2" style="fill:var(--winner-2)"><title>Task 25: clearing food from table into fridge, q 0.06</title></rect><rect x="392" y="88" width="13" height="13" rx="2" style="fill:var(--comet-0)"><title>Task 26: assembling gift baskets, q 0.29</title></rect><rect x="407" y="88" width="13" height="13" rx="2" style="fill:var(--comet-0)"><title>Task 27: sorting household items, q 0.13</title></rect><rect x="422" y="88" width="13" height="13" rx="2" style="fill:var(--comet-0)"><title>Task 28: getting organized for work, q 0.02</title></rect><rect x="437" y="88" width="13" height="13" rx="2" style="fill:var(--winner-2)"><title>Task 29: clean up your desk, q 0.07</title></rect><rect x="302" y="103" width="13" height="13" rx="2" style="fill:var(--winner-0)"><title>Task 30: setting the fire, q 0.09</title></rect><rect x="317" y="103" width="13" height="13" rx="2" style="fill:var(--winner-3)"><title>Task 31: clean boxing gloves, q 0.50</title></rect><rect x="332" y="103" width="13" height="13" rx="2" style="fill:var(--winner-3)"><title>Task 32: wash a baseball cap, q 0.00</title></rect><rect x="347" y="103" width="13" height="13" rx="2" style="fill:var(--comet-3)"><title>Task 33: wash dog toys, q 0.00</title></rect><rect x="362" y="103" width="13" height="13" rx="2" style="fill:var(--winner-2)"><title>Task 34: hanging pictures, q 0.00</title></rect><rect x="377" y="103" width="13" height="13" rx="2" style="fill:var(--comet-0)"><title>Task 35: attach a camera to a tripod, q 0.00</title></rect><rect x="392" y="103" width="13" height="13" rx="2" style="fill:var(--comet-0)"><title>Task 36: clean a patio, q 0.00</title></rect><rect x="407" y="103" width="13" height="13" rx="2" style="fill:var(--comet-0)"><title>Task 37: clean a trumpet, q 0.00</title></rect><rect x="422" y="103" width="13" height="13" rx="2" style="fill:var(--winner-3)"><title>Task 38: spraying for bugs, q 0.05</title></rect><rect x="437" y="103" width="13" height="13" rx="2" style="fill:var(--comet-0)"><title>Task 39: spraying fruit trees, q 0.00</title></rect><rect x="302" y="118" width="13" height="13" rx="2" style="fill:var(--winner-1)"><title>Task 40: make microwave popcorn, q 0.40</title></rect><rect x="317" y="118" width="13" height="13" rx="2" style="fill:var(--comet-0)"><title>Task 41: cook cabbage, q 0.13</title></rect><rect x="332" y="118" width="13" height="13" rx="2" style="fill:var(--winner-2)"><title>Task 42: chop an onion, q 0.17</title></rect><rect x="347" y="118" width="13" height="13" rx="2" style="fill:var(--comet-0)"><title>Task 43: slicing vegetables, q 0.06</title></rect><rect x="362" y="118" width="13" height="13" rx="2" style="fill:var(--winner-2)"><title>Task 44: chopping wood, q 0.13</title></rect><rect x="377" y="118" width="13" height="13" rx="2" style="fill:var(--comet-0)"><title>Task 45: cook hot dogs, q 0.10</title></rect><rect x="392" y="118" width="13" height="13" rx="2" style="fill:var(--winner-3)"><title>Task 46: cook bacon, q 0.00</title></rect><rect x="407" y="118" width="13" height="13" rx="2" style="fill:var(--winner-2)"><title>Task 47: freeze pies, q 0.00</title></rect><rect x="422" y="118" width="13" height="13" rx="2" style="fill:var(--winner-2)"><title>Task 48: canning food, q 0.00</title></rect><rect x="437" y="118" width="13" height="13" rx="2" style="fill:var(--comet-0)"><title>Task 49: make pizza, q 0.00</title></rect><rect x="302" y="133" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 50: freeze fruit, q 0.06</title></rect><rect x="317" y="133" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 51: cook a brisket, q 0.00</title></rect><rect x="332" y="133" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 52: sorting bottles cans and paper, q 0.10</title></rect><rect x="347" y="133" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 53: tidying living room, q 0.05</title></rect><rect x="362" y="133" width="13" height="13" rx="2" style="fill:var(--w100-1)"><title>Task 54: putting away toys, q 0.64</title></rect><rect x="377" y="133" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 55: re-shelving library books, q 0.17</title></rect><rect x="392" y="133" width="13" height="13" rx="2" style="fill:var(--w100-1)"><title>Task 56: make rose centerpieces, q 0.57</title></rect><rect x="407" y="133" width="13" height="13" rx="2" style="fill:var(--comet-3)"><title>Task 57: sweeping garage, q 0.00</title></rect><rect x="422" y="133" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 58: stacking wood, q 0.47</title></rect><rect x="437" y="133" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 59: organizing art supplies, q 0.18</title></rect><rect x="302" y="148" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 60: scrubbing bathroom floor, q 0.00</title></rect><rect x="317" y="148" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 61: bringing paper to recycling, q 0.00</title></rect><rect x="332" y="148" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 62: halve an egg, q 0.02</title></rect><rect x="347" y="148" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 63: installing smoke detectors, q 0.00</title></rect><rect x="362" y="148" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 64: setting the table, q 0.09</title></rect><rect x="377" y="148" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 65: unloading the car, q 0.00</title></rect><rect x="392" y="148" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 66: turning out all lights before sleep, q 0.10</title></rect><rect x="407" y="148" width="13" height="13" rx="2" style="fill:var(--comet-3)"><title>Task 67: boxing food after dinner, q 0.05</title></rect><rect x="422" y="148" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 68: cleaning up branches and twigs, q 0.00</title></rect><rect x="437" y="148" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 69: vacuuming floors, q 0.00</title></rect><rect x="302" y="163" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 70: thawing frozen food, q 0.23</title></rect><rect x="317" y="163" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 71: clean your rusty garden tools, q 0.00</title></rect><rect x="332" y="163" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 72: cook a frozen pie, q 0.05</title></rect><rect x="347" y="163" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 73: organizing school stuff, q 0.15</title></rect><rect x="362" y="163" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 74: carrying out garden furniture, q 0.00</title></rect><rect x="377" y="163" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 75: put together a basic pruning kit, q 0.00</title></rect><rect x="392" y="163" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 76: dispose of glass, q 0.42</title></rect><rect x="407" y="163" width="13" height="13" rx="2" style="fill:var(--w100-1)"><title>Task 77: installing a modem, q 0.70</title></rect><rect x="422" y="163" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 78: make cabinet doors, q 0.00</title></rect><rect x="437" y="163" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 79: polishing shoes, q 0.03</title></rect><rect x="302" y="178" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 80: clean up broken glass, q 0.53</title></rect><rect x="317" y="178" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 81: packing meal for delivery, q 0.07</title></rect><rect x="332" y="178" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 82: store batteries, q 0.03</title></rect><rect x="347" y="178" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 83: store honey, q 0.00</title></rect><rect x="362" y="178" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 84: tidying bathroom, q 0.25</title></rect><rect x="377" y="178" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 85: putting dirty dishes in sink, q 0.42</title></rect><rect x="392" y="178" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 86: make gift bags for baby showers, q 0.15</title></rect><rect x="407" y="178" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 87: collecting aluminum cans, q 0.47</title></rect><rect x="422" y="178" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 88: rearrange your room, q 0.33</title></rect><rect x="437" y="178" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 89: installing a fax machine, q 0.10</title></rect><rect x="302" y="193" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 90: composting waste, q 0.05</title></rect><rect x="317" y="193" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 91: store produce, q 0.00</title></rect><rect x="332" y="193" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 92: installing a scanner, q 0.05</title></rect><rect x="347" y="193" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 93: clean a keyboard, q 0.00</title></rect><rect x="362" y="193" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 94: dispose of batteries, q 0.07</title></rect><rect x="377" y="193" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 95: cook brussels sprouts, q 0.00</title></rect><rect x="392" y="193" width="13" height="13" rx="2" style="fill:var(--w100-0)"><title>Task 96: cook broccolini, q 0.25</title></rect><rect x="407" y="193" width="13" height="13" rx="2" style="fill:var(--w100-0)"><title>Task 97: setup a bar for a cocktail party, q 0.27</title></rect><rect x="422" y="193" width="13" height="13" rx="2" style="fill:var(--w100-1)"><title>Task 98: laying tile floors, q 0.41</title></rect><rect x="437" y="193" width="13" height="13" rx="2" style="fill:var(--comet-2)"><title>Task 99: sorting books on shelf, q 0.00</title></rect><text class="tz-q" x="302" y="234">Q = 0.156</text><text class="tz-lab" x="302" y="251">95% CI 0.144–0.168</text></svg><!-- /prerender:teaser -->
+        <figcaption>The frozen route: each of the 100 tasks (grid, task 0 at top left) runs exactly one checkpoint from the bank.</figcaption>
+      </figure>
+    </div>
+    <div class="wrap">
+      <dl class="tiles">
         <div class="tile">
           <dt>Q, public instances</dt>
-          <dd class="tv" data-bind="headline.Q" data-fmt="q3">–</dd>
-          <dd class="ts">95% CI <span data-bind="headline.Q_ci95.0" data-fmt="q3">–</span>–<span data-bind="headline.Q_ci95.1" data-fmt="q3">–</span></dd>
+          <dd class="tv" data-bind="headline.Q" data-fmt="f3">0.156</dd>
+          <dd class="ts">95% CI <span data-bind="headline.Q_ci95.0" data-fmt="f3">0.144</span>–<span data-bind="headline.Q_ci95.1" data-fmt="f3">0.168</span></dd>
         </div>
         <div class="tile">
           <dt>Episodes</dt>
-          <dd class="tv" data-bind="headline.episodes" data-fmt="int">–</dd>
+          <dd class="tv" data-bind="headline.episodes" data-fmt="int">1,000</dd>
           <dd class="ts">10 instances × 100 tasks</dd>
         </div>
         <div class="tile">
-          <dt>Tasks with partial credit</dt>
-          <dd class="tv" data-bind="headline.nonzero_tasks" data-fmt="int">–</dd>
-          <dd class="ts">of 100; <span data-bind="headline.zero_tasks" data-fmt="int">–</span> score zero</dd>
+          <dt>Tasks with any credit <span class="nc">(q &gt; 0)</span></dt>
+          <dd class="tv" data-bind="headline.nonzero_tasks" data-fmt="int">71</dd>
+          <dd class="ts">of 100; <span data-bind="headline.zero_tasks" data-fmt="int">29</span> score zero</dd>
         </div>
         <div class="tile">
           <dt>Full successes</dt>
-          <dd class="tv" data-bind="headline.successes" data-fmt="int">–</dd>
-          <dd class="ts">episodes, in <span data-bind="headline.tasks_with_success" data-fmt="int">–</span> tasks</dd>
+          <dd class="tv" data-bind="headline.successes" data-fmt="int">37</dd>
+          <dd class="ts">episodes, in <span data-bind="headline.tasks_with_success" data-fmt="int">15</span> tasks</dd>
         </div>
         <div class="tile">
           <dt>Policies in the bank</dt>
-          <dd class="tv" data-bind="headline.policies_routed" data-fmt="int">–</dd>
-          <dd class="ts">routed, of <span data-bind="headline.policies_tested" data-fmt="int">–</span> tested</dd>
+          <dd class="tv" data-bind="headline.policies_routed" data-fmt="int">10</dd>
+          <dd class="ts">nine public, one continued by us</dd>
         </div>
       </dl>
       <p class="load-error" id="loadError" hidden role="alert"></p>
     </div>
   </section>
 
-  <!-- 2. Abstract -->
+  <!-- Abstract -->
   <section id="abstract" class="sec">
     <div class="wrap narrow">
       <div class="sec-head"><span class="sec-num">01</span><h2>Abstract</h2></div>
-      <p class="abstract">The 2026 BEHAVIOR Challenge asks one system to complete 100 long-horizon household tasks in simulation. Rather than train a single generalist, we assemble a bank of ten public and lightly fine-tuned vision-language-action checkpoints and route each task to one of them. Routing uses only development instances: a hierarchical empirical-Bayes model combines public reference results, policy-level estimates paired against a reference policy, and our ledger of 1,146 development rollouts, and a conservative rule keeps the incumbent policy unless a challenger also beats it on shared instances. The frozen route was evaluated once on the ten public reporting instances of every task. It reaches Q = 0.156 (95% CI 0.144–0.168) over 1,000 episodes, earning partial credit on 71 tasks but full success in only 37 episodes. Development estimates rank tasks well (Spearman 0.68) yet are optimistic by 0.05 on average, and rollout noise (s.d. 0.20 within a task) means telling apart two policies that differ by 0.05 takes about 250 rollouts each. We release the route, all 1,000 metric files, the development ledger, a reimplementation of the selector that reproduces 48 of 50 stage-2 decisions, and a fail-stop serving layer for hidden evaluation.</p>
+      <p class="abstract">The 2026 BEHAVIOR Challenge asks one system to complete 100 long-horizon household tasks in simulation. Rather than train a single generalist, we assemble a bank of ten vision-language-action checkpoints, nine public and one continued by us, and route each task to one of them. Routing uses development instances only: an empirical-Bayes model combines public reference scores, policy levels estimated against a reference policy, and 800 eligible development rollouts, and conservative switching rules guard each decision. The frozen route reaches Q = 0.156 (95% CI 0.144–0.168) on the ten public reporting instances of every task; 71 tasks score above zero and 37 of 1,000 episodes, in 15 tasks, succeed. Development estimates ranked tasks moderately well (Spearman 0.68) but were optimistic by 0.050 on average, and the gap sits in tasks whose estimate rested on a prior or a single rollout. A posterior-predictive simulation shows that our posterior claims are self-consistent, while ranking by raw development means would overclaim by 0.12, and that perfect knowledge of the candidates would add only about 0.04 on the new tasks. We release the route, all 1,000 metric files, the development ledger, the selector, the simulator and a fail-stop serving layer.</p>
     </div>
   </section>
 
-  <!-- 3. Method -->
+  <!-- Method -->
   <section id="method" class="sec">
     <div class="wrap">
       <div class="sec-head"><span class="sec-num">02</span><h2>How the route is chosen</h2></div>
       <p class="lede">Each task is routed to exactly one policy. The choice uses development instances 311–320 only; the ten public reporting instances (301–310) were run once, after the route was frozen.</p>
       <figure class="fig">
-        <div class="diagram" id="pipeline" role="img" aria-label="Pipeline: ten public checkpoints, development rollouts on instances 311 to 320, an empirical-Bayes posterior per task and policy, strict switching rules, a frozen route hashed with SHA-256, one evaluation on instances 301 to 310, and the hidden test on instances 321 to 340 run by the organizers."></div>
+        <div class="diagram" id="pipeline" role="img" aria-label="Pipeline: public checkpoints, development rollouts on instances 311 to 320, an empirical-Bayes posterior per task and policy, switching rules, a frozen route hashed with SHA-256, one evaluation on instances 301 to 310, and the hidden test on instances 321 to 340 run by the organizers."></div>
+        <noscript><ol class="flow-fallback"><li>Public checkpoints</li><li>Development rollouts, instances 311–320</li><li>Empirical-Bayes posterior per (task, policy)</li><li>Switching rules</li><li>Frozen route, hashed with SHA-256</li><li>One evaluation on public instances 301–310</li><li>Hidden test, instances 321–340, run by the organizers</li></ol></noscript>
         <figcaption>Steps 1–5 use development data only. Step 6 ran once on the frozen route. Step 7 is run by the organizers.</figcaption>
       </figure>
 
       <div class="cols2">
         <div>
           <h3>Prior for tasks 0–49</h3>
-          <p>These tasks have public 2025 reference scores. A policy's prior mean is a <em>transfer factor</em> times its reference score. The factor is estimated from our own development rollouts on other tasks: for example 0.55 ± 0.09 for pt50 and 0.81 for the 2025 winner.</p>
+          <p>These tasks have public 2025 reference scores. A policy's prior mean is a <em>transfer factor</em> times its reference score. For Comet pt50 the factor is estimated from our own development rollouts on the other tasks (0.55 ± 0.09<sup class="dag">†</sup>). For the 2025 winner checkpoints it was fixed at 0.81 ± 0.10<sup class="dag">†</sup> before stage 2; an empirical-Bayes estimate gave 0.69 ± 0.11<sup class="dag">†</sup>.</p>
         </div>
         <div>
           <h3>Prior for tasks 50–99</h3>
@@ -119,66 +170,88 @@
       </div>
 
       <h3>Switching rules</h3>
-      <p>The incumbent keeps a task unless a challenger clears every rule:</p>
-      <ul class="rules">
-        <li>at least <strong>2</strong> of its own development rollouts on the task;</li>
-        <li>beats the incumbent on at least <strong>2</strong> shared instances;</li>
-        <li>posterior gain of at least <strong>0.01</strong>;</li>
-        <li>no veto;</li>
-        <li>one checkpoint per family.</li>
-      </ul>
+      <div class="cols2 rules-2">
+        <div class="rulebox">
+          <p class="rule-head"><strong>Tasks 0–49.</strong> The incumbent comes from an earlier route. A challenger replaces it only with</p>
+          <ul class="rules">
+            <li>at least <strong>2</strong> of its own development rollouts;</li>
+            <li>the development guard: it beats the incumbent on at least <strong>2</strong> shared development instances;</li>
+            <li>a posterior gain of at least <strong>0.01</strong>;</li>
+            <li>no veto.</li>
+          </ul>
+        </div>
+        <div class="rulebox">
+          <p class="rule-head"><strong>Tasks 50–99.</strong> The incumbent is the weak reference policy s150997.</p>
+          <ul class="rules">
+            <li>The highest eligible posterior wins if its gain is at least <strong>0.01</strong>;</li>
+            <li>no veto;</li>
+            <li>scope: a specialist is a candidate only on tasks where it has its own development rollouts, and only with at least <strong>2</strong> rollouts in total;</li>
+            <li>one checkpoint per family.</li>
+          </ul>
+        </div>
+      </div>
+      <p class="muted-p"><strong>Veto:</strong> a challenger is rejected if it scored 0 on every development instance where the incumbent scored above 0.1.</p>
 
-      <h3>Two stages</h3>
-      <p>Stage 1 routed <span data-bind="stages.1.tasks" data-fmt="int">–</span> tasks early. The other <span data-bind="stages.2.tasks" data-fmt="int">–</span> were deferred and routed in stage 2 from 860 development rollouts; the stage-2 route was frozen on 2026-10-13 at 12:54 UTC.</p>
-      <p id="repro" class="muted-p"></p>
+      <h3>Development ledger and stages</h3>
+      <p>The ledger holds <span data-bind="headline.dev_rollouts" data-fmt="int">1,146</span> development rollouts over <span data-bind="headline.policies_tested" data-fmt="int">36</span> labels, <span data-bind="headline.dev_eligible" data-fmt="int">800</span> of them eligible for selection over <span data-bind="breakdown.eligible_labels" data-fmt="int">28</span> labels; <span data-bind="breakdown.share_313_eligible" data-fmt="pct0">47%</span> of eligible rollouts (<span data-bind="share_313" data-fmt="pct0">57%</span> of all) used instance 313.</p>
+      <p>Stage 1 routed <span data-bind="stages.1.tasks" data-fmt="int">37</span> tasks early. The other <span data-bind="stages.2.tasks" data-fmt="int">63</span> were deferred; the stage-2 route used 860 development rollouts<sup class="dag">†</sup> and was frozen on <span data-bind="hashes.stage2_frozen_utc" data-fmt="utc">2026-10-13 at 12:54 UTC</span>.</p>
+      <p>Run on the released ledger (<span data-bind="reproduction.dev_rollouts_used" data-fmt="int">411</span> rollouts on tasks 50–99 that finished before the stage-2 freeze), our reimplementation reproduces <span data-bind="reproduction.agree" data-fmt="int">48</span> of the <span data-bind="reproduction.tasks" data-fmt="int">50</span> stage-2 decisions on tasks 50–99, including all <span data-bind="reproduction_baselines.nondefault_agree" data-fmt="int">8</span> that route away from the ymetz checkpoint; routing ymetz everywhere would agree on <span data-bind="reproduction_baselines.ymetz_everywhere_agree" data-fmt="int">42</span>. The <span data-bind="breakdown.by_stage.stage 2, tasks 0-49.tasks" data-fmt="int">13</span> stage-2 tasks in 0–49 depend on reference tables we do not redistribute. <span id="reproDis"><!-- prerender:disagree -->It disagrees on task 70 (thawing frozen food), where it prefers pt50 + 2026 demos (ours), posterior 0.176, and the frozen route chose ymetz pt50 step 9999, posterior 0.173; and on task 87 (collecting aluminum cans), where it prefers pt50 + 2026 demos (ours), posterior 0.288, and the frozen route chose ymetz pt50 step 9999, posterior 0.229.<!-- /prerender:disagree --></span></p>
+      <p class="footnote"><sup class="dag">†</sup> From pipeline logs not included in the release.</p>
     </div>
   </section>
 
-  <!-- 4. Selector -->
+  <!-- Selector -->
   <section id="selector" class="sec">
     <div class="wrap">
       <div class="sec-head"><span class="sec-num">03</span><h2>Try the selector</h2></div>
-      <p class="lede">A challenger's posterior combines its prior with its own development rollouts by a conjugate Gaussian update. Move the sliders to see when the rules allow a switch.</p>
+      <p class="lede">A challenger's posterior combines its prior with its own development rollouts by a conjugate Gaussian update. Move the sliders to see when the tasks 0–49 rules allow a switch.</p>
       <div class="sel">
         <form class="sel-controls" id="selForm" onsubmit="return false">
-          <div class="ctl"><label for="s_mu">Prior mean <output id="o_mu"></output></label><input type="range" id="s_mu" min="0" max="0.6" step="0.01" value="0.15"></div>
-          <div class="ctl"><label for="s_sd">Prior s.d. <output id="o_sd"></output></label><input type="range" id="s_sd" min="0.02" max="0.3" step="0.01" value="0.10"></div>
-          <div class="ctl"><label for="s_n">Own dev rollouts <output id="o_n"></output></label><input type="range" id="s_n" min="0" max="10" step="1" value="3"></div>
-          <div class="ctl"><label for="s_x">Their mean q <output id="o_x"></output></label><input type="range" id="s_x" min="0" max="1" step="0.01" value="0.40"></div>
-          <div class="ctl"><label for="s_sig">Rollout noise s.d. <output id="o_sig"></output></label><input type="range" id="s_sig" min="0.05" max="0.45" step="0.01" value="0.20"></div>
-          <div class="ctl"><label for="s_inc">Incumbent posterior mean <output id="o_inc"></output></label><input type="range" id="s_inc" min="0" max="0.6" step="0.01" value="0.18"></div>
+          <div class="ctl"><label for="s_mu">Prior mean μ₀ <output id="o_mu" for="s_mu">0.15</output></label><input type="range" id="s_mu" min="0" max="0.6" step="0.01" value="0.15"></div>
+          <div class="ctl"><label for="s_sd">Prior s.d. τ₀ <output id="o_sd" for="s_sd">0.10</output></label><input type="range" id="s_sd" min="0.02" max="0.3" step="0.01" value="0.10"></div>
+          <div class="ctl"><label for="s_n">Own development rollouts n <output id="o_n" for="s_n">3</output></label><input type="range" id="s_n" min="0" max="10" step="1" value="3"></div>
+          <div class="ctl"><label for="s_x">Challenger's own rollout mean x̄ <output id="o_x" for="s_x">0.40</output></label><input type="range" id="s_x" min="0" max="1" step="0.01" value="0.40"></div>
+          <div class="ctl"><label for="s_sig">Rollout noise σ <output id="o_sig" for="s_sig">0.20</output></label><input type="range" id="s_sig" min="0.05" max="0.45" step="0.01" value="0.20"></div>
+          <div class="ctl"><label for="s_inc">Incumbent posterior mean <output id="o_inc" for="s_inc">0.18</output></label><input type="range" id="s_inc" min="0" max="0.6" step="0.01" value="0.18"></div>
         </form>
         <div class="sel-out">
-          <div class="sel-stats" id="selStats" aria-live="polite"></div>
+          <div class="sel-stats" id="selStats"></div>
           <div class="chart ch-sel" id="selChart"></div>
-          <div class="legend" id="selLegend"></div>
-          <p class="verdict" id="selVerdict" aria-live="polite"></p>
-          <p class="formula">posterior precision = 1/s.d.<sub>0</sub><sup>2</sup> + n/σ<sup>2</sup><br>posterior mean = (μ<sub>0</sub>/s.d.<sub>0</sub><sup>2</sup> + n·x̄/σ<sup>2</sup>) / precision</p>
-          <p class="note">The real rule also requires the challenger to beat the incumbent on at least two shared instances, which this sketch cannot check.</p>
+          <div class="legend">
+            <span><i class="sw-line" style="background:var(--muted)"></i>prior</span>
+            <span><i class="sw-line" style="background:var(--ink)"></i>posterior</span>
+            <span><i class="sw-vline"></i>incumbent</span>
+            <span><i class="sw-tri"></i>challenger's own rollout mean x̄</span>
+          </div>
+          <p class="verdict" id="selVerdict"></p>
         </div>
       </div>
+      <p class="formula">posterior precision = 1/τ₀² + n/σ²<br>posterior mean = (μ₀/τ₀² + n·x̄/σ²) / precision</p>
+      <p class="note">The verdict applies the tasks 0–49 rule: at least 2 own rollouts and a posterior gain of at least 0.01. The development guard (wins on at least 2 shared instances) and the veto need per-instance results, which this sketch does not model.</p>
+      <div class="sr" id="selLive" aria-live="polite"></div>
     </div>
   </section>
 
-  <!-- 5. Bank -->
+  <!-- Bank -->
   <section id="bank" class="sec">
     <div class="wrap">
       <div class="sec-head"><span class="sec-num">04</span><h2>The bank</h2></div>
-      <p class="lede">The <span data-bind="headline.policies_routed" data-fmt="int">–</span> policies that received at least one task, ordered by task points contributed (the sum of their tasks' realized mean q).</p>
+      <p class="lede">The <span data-bind="headline.policies_routed" data-fmt="int">10</span> checkpoints that received at least one task, ordered by task points contributed (the sum of their tasks' realized mean q). Colour hue marks the family; lighter and darker steps mark checkpoints within it.</p>
       <figure class="fig">
-        <figcaption class="fig-title">Task points contributed per policy</figcaption>
+        <h3 class="fig-title">Task points contributed per checkpoint</h3>
         <div class="chart ch-points" id="pointsChart"></div>
-        <figcaption id="pointsCap"></figcaption>
+        <figcaption>Task points are the sum of a checkpoint's realized task means. Over all 100 tasks they total <span data-bind="headline.Q" data-fmt="x100f1">15.6</span> (100 × Q). Activate a bar to show that checkpoint's tasks in the explorer.</figcaption>
       </figure>
-      <div class="cards" id="bankCards"></div>
+      <div class="cards" id="bankCards"><!-- prerender:bank --><article class="pc"><div class="pc-head"><span class="sw" style="background:var(--comet-2)"></span><div><h3>ymetz pt50 step 9999</h3><div class="pid">comet@ymetz9999</div></div></div><div class="badges"><span class="badge">comet</span></div><div class="pc-stats"><div><b>42</b><span>tasks routed</span></div><div><b>0.111</b><span>realized q</span></div><div><b>0.188</b><span>expected q</span></div><div><b>5</b><span>successes</span></div></div><div class="pc-src">Source: <a href="https://huggingface.co/ymetz/pi05-b1k-pt50-steps-public">ymetz/pi05-b1k-pt50-steps-public</a> @ <code>20e80d2</code> / <code>steps-cont-9999</code> · replay 32</div><p>Public continuation of pt50 on the 2026 demos with task/skill/step prompts.</p><p class="lic">Licence: Declared to follow the base checkpoint and OpenPI terms.</p><button class="linkbtn" type="button" data-policy="comet@ymetz9999">Show its 42 tasks in the explorer</button></article><article class="pc"><div class="pc-head"><span class="sw" style="background:var(--comet-0)"></span><div><h3>Comet π0.5 pt50</h3><div class="pid">pt50</div></div></div><div class="badges"><span class="badge">comet</span></div><div class="pc-stats"><div><b>25</b><span>tasks routed</span></div><div><b>0.145</b><span>realized q</span></div><div><b>0.230</b><span>expected q</span></div><div><b>5</b><span>successes</span></div></div><div class="pc-src">Source: <a href="https://huggingface.co/sunshk/openpi_comet">sunshk/openpi_comet</a> @ <code>61739ff</code> / <code>pi05-b1kpt50-cs32</code> · replay 32</div><p>π0.5 (OpenPI) post-trained by Team Comet on BEHAVIOR-1K demonstrations (2025 challenge, 2nd place).</p><p class="lic">Licence: Code Apache-2.0; separate weight grant not found (scope unresolved).</p><button class="linkbtn" type="button" data-policy="pt50">Show its 25 tasks in the explorer</button></article><article class="pc"><div class="pc-head"><span class="sw" style="background:var(--w100-1)"></span><div><h3>JackLiu 4-task specialist</h3><div class="pid">w100@j_jl_4task100</div></div></div><div class="badges"><span class="badge">winner-format specialist</span></div><div class="pc-stats"><div><b>4</b><span>tasks routed</span></div><div><b>0.581</b><span>realized q</span></div><div><b>0.368</b><span>expected q</span></div><div><b>11</b><span>successes</span></div></div><div class="pc-src">Source: <a href="https://huggingface.co/JackLiu0406/b1k-checkpoints">JackLiu0406/b1k-checkpoints</a> @ <code>ec1844b</code> / <code>pi_behavior_100t_meta_ft_4task</code> · replay 20</div><p>Winner-format model fine-tuned for four 2026 tasks (54, 56, 77, 98).</p><p class="lic">Licence: Apache-2.0 declared by the publisher at this revision.</p><button class="linkbtn" type="button" data-policy="w100@j_jl_4task100">Show its 4 tasks in the explorer</button></article><article class="pc"><div class="pc-head"><span class="sw" style="background:var(--winner-0)"></span><div><h3>2025 winner ckpt 2</h3><div class="pid">winner2</div></div></div><div class="badges"><span class="badge">winner</span></div><div class="pc-stats"><div><b>5</b><span>tasks routed</span></div><div><b>0.292</b><span>realized q</span></div><div><b>0.355</b><span>expected q</span></div><div><b>1</b><span>successes</span></div></div><div class="pc-src">Source: <a href="https://huggingface.co/IliaLarchenko/behavior_submission">IliaLarchenko/behavior_submission</a> @ <code>89545bc</code> / <code>checkpoint_2</code> · replay 20</div><p>2025 BEHAVIOR Challenge winning solution, checkpoint 2.</p><p class="lic">Licence: Apache-2.0 declared by the publisher at this revision.</p><button class="linkbtn" type="button" data-policy="winner2">Show its 5 tasks in the explorer</button></article><article class="pc"><div class="pc-head"><span class="sw" style="background:var(--winner-2)"></span><div><h3>2025 winner ckpt 1</h3><div class="pid">winner1</div></div></div><div class="badges"><span class="badge">winner</span></div><div class="pc-stats"><div><b>11</b><span>tasks routed</span></div><div><b>0.094</b><span>realized q</span></div><div><b>0.108</b><span>expected q</span></div><div><b>1</b><span>successes</span></div></div><div class="pc-src">Source: <a href="https://huggingface.co/IliaLarchenko/behavior_submission">IliaLarchenko/behavior_submission</a> @ <code>89545bc</code> / <code>checkpoint_1</code> · replay 20</div><p>2025 BEHAVIOR Challenge winning solution (Larchenko, Zarin, Karnatak), native wrapper with correction rules.</p><p class="lic">Licence: Apache-2.0 declared by the publisher at this revision.</p><button class="linkbtn" type="button" data-policy="winner1">Show its 11 tasks in the explorer</button></article><article class="pc"><div class="pc-head"><span class="sw" style="background:var(--comet-1)"></span><div><h3>Comet π0.5 pt12</h3><div class="pid">pt12</div></div></div><div class="badges"><span class="badge">comet</span></div><div class="pc-stats"><div><b>2</b><span>tasks routed</span></div><div><b>0.472</b><span>realized q</span></div><div><b>0.305</b><span>expected q</span></div><div><b>5</b><span>successes</span></div></div><div class="pc-src">Source: <a href="https://huggingface.co/sunshk/openpi_comet">sunshk/openpi_comet</a> @ <code>61739ff</code> / <code>pi05-b1kpt12-cs32</code> · replay 32</div><p>Sibling Comet π0.5 checkpoint released with pt50.</p><p class="lic">Licence: Code Apache-2.0; separate weight grant not found (scope unresolved).</p><button class="linkbtn" type="button" data-policy="pt12">Show its 2 tasks in the explorer</button></article><article class="pc"><div class="pc-head"><span class="sw" style="background:var(--winner-3)"></span><div><h3>2025 winner ckpt 3</h3><div class="pid">winner3</div></div></div><div class="badges"><span class="badge">winner</span></div><div class="pc-stats"><div><b>5</b><span>tasks routed</span></div><div><b>0.119</b><span>realized q</span></div><div><b>0.137</b><span>expected q</span></div><div><b>5</b><span>successes</span></div></div><div class="pc-src">Source: <a href="https://huggingface.co/IliaLarchenko/behavior_submission">IliaLarchenko/behavior_submission</a> @ <code>89545bc</code> / <code>checkpoint_3</code> · replay 20</div><p>2025 BEHAVIOR Challenge winning solution, checkpoint 3.</p><p class="lic">Licence: Apache-2.0 declared by the publisher at this revision.</p><button class="linkbtn" type="button" data-policy="winner3">Show its 5 tasks in the explorer</button></article><article class="pc"><div class="pc-head"><span class="sw" style="background:var(--w100-0)"></span><div><h3>amyjia specialist (t90)</h3><div class="pid">w100@b_amy_t90</div></div></div><div class="badges"><span class="badge">winner-format specialist</span></div><div class="pc-stats"><div><b>2</b><span>tasks routed</span></div><div><b>0.255</b><span>realized q</span></div><div><b>0.267</b><span>expected q</span></div><div><b>0</b><span>successes</span></div></div><div class="pc-src">Source: <a href="https://huggingface.co/amyjia1212/b1k-2026-t90-91-93-96-97">amyjia1212/b1k-2026-t90-91-93-96-97</a> @ <code>7519e44</code> / <code>step_099999</code> · replay 20</div><p>Winner-format specialist published for tasks 90, 91, 93, 96 and 97.</p><p class="lic">Licence: Public and ungated; no licence stated by the publisher.</p><button class="linkbtn" type="button" data-policy="w100@b_amy_t90">Show its 2 tasks in the explorer</button></article><article class="pc"><div class="pc-head"><span class="sw" style="background:var(--winner-1)"></span><div><h3>2025 winner ckpt 4</h3><div class="pid">winner4</div></div></div><div class="badges"><span class="badge">winner</span></div><div class="pc-stats"><div><b>1</b><span>tasks routed</span></div><div><b>0.400</b><span>realized q</span></div><div><b>0.439</b><span>expected q</span></div><div><b>4</b><span>successes</span></div></div><div class="pc-src">Source: <a href="https://huggingface.co/IliaLarchenko/behavior_submission">IliaLarchenko/behavior_submission</a> @ <code>89545bc</code> / <code>checkpoint_4</code> · replay 20</div><p>2025 BEHAVIOR Challenge winning solution, checkpoint 4.</p><p class="lic">Licence: Apache-2.0 declared by the publisher at this revision.</p><button class="linkbtn" type="button" data-policy="winner4">Show its 1 task in the explorer</button></article><article class="pc"><div class="pc-head"><span class="sw" style="background:var(--comet-3)"></span><div><h3>pt50 + 2026 demos (ours)</h3><div class="pid">s150997</div></div></div><div class="badges"><span class="badge">comet</span><span class="badge ours">ours</span></div><div class="pc-stats"><div><b>3</b><span>tasks routed</span></div><div><b>0.017</b><span>realized q</span></div><div><b>0.098</b><span>expected q</span></div><div><b>0</b><span>successes</span></div></div><div class="pc-src">Source: <span>KANR continued training</span> @ <code>step 150997</code> · replay 32</div><p>Our continued training of Comet pt50 on the 2026 demonstrations of all 100 tasks.</p><p class="lic">Licence: Derivative of pt50; inherits the pt50 terms.</p><button class="linkbtn" type="button" data-policy="s150997">Show its 3 tasks in the explorer</button></article><!-- /prerender:bank --></div>
     </div>
   </section>
 
-  <!-- 6. Results explorer -->
+  <!-- Results explorer -->
   <section id="results" class="sec">
     <div class="wrap">
       <div class="sec-head"><span class="sec-num">05</span><h2>Results explorer</h2></div>
-      <p class="lede">All 100 tasks on the public reporting instances 301–310. Bars show realized mean q, coloured by routed policy; a short horizontal tick marks the expected q at freeze.</p>
+      <p class="lede">All 100 tasks on the public reporting instances 301–310. Each mark is a task's realized mean q, coloured by its checkpoint; a short tick marks the expected q at freeze.</p>
+      <noscript><p class="note">The interactive explorer needs JavaScript. The same per-task data is in <a href="data/route.json">route.json</a>, <a href="data/tasks.json">tasks.json</a> and <a href="data/official_episodes.csv">official_episodes.csv</a>.</p></noscript>
       <div class="filters" id="filters">
         <div class="f-row">
           <label class="f-search"><span class="sr">Search task name</span><input type="search" id="fSearch" placeholder="Search tasks" autocomplete="off"></label>
@@ -196,24 +269,33 @@
           </select></label>
         </div>
         <div class="f-row">
-          <span class="lbl">Policy</span>
-          <div class="chips" id="fPolicies" role="group" aria-label="Filter by policy"></div>
-          <button type="button" class="linkbtn" id="fReset">Reset</button>
+          <span class="lbl">Checkpoint</span>
+          <div class="chips" id="fPolicies" role="group" aria-label="Filter by checkpoint"></div>
+          <button type="button" class="linkbtn" id="fReset">Reset filters</button>
         </div>
       </div>
       <p class="summary" id="exSummary" aria-live="polite"></p>
       <figure class="fig">
+        <div class="fig-tools"><label class="tog"><input type="checkbox" id="stripCI"> Show 95% intervals</label></div>
         <div class="chart ch-strip" id="stripChart"></div>
-        <div class="legend" id="stripLegend"></div>
-        <figcaption>Hover or tap a bar for its numbers. Click it (or tap it twice) to open the task's row below. Hover a policy chip to highlight its tasks.</figcaption>
+        <button type="button" class="btn sm more" id="stripMore" hidden></button>
+        <div class="legend">
+          <span><i class="sw" style="background:var(--comet-2)"></i><i class="sw" style="background:var(--comet-0)"></i><i class="sw" style="background:var(--comet-3)"></i><i class="sw" style="background:var(--comet-1)"></i>comet</span>
+          <span><i class="sw" style="background:var(--winner-2)"></i><i class="sw" style="background:var(--winner-0)"></i><i class="sw" style="background:var(--winner-3)"></i><i class="sw" style="background:var(--winner-1)"></i>winner</span>
+          <span><i class="sw" style="background:var(--w100-1)"></i><i class="sw" style="background:var(--w100-0)"></i>winner-format specialist</span>
+          <span><i class="sw-tick"></i>expected q at freeze</span>
+          <span><i class="sw-whisk"></i>95% interval over the 10 instances</span>
+        </div>
+        <figcaption>Hover or tap a mark for its numbers; click it (or tap it twice) to open the task's row. Hover a checkpoint chip to highlight its tasks. Intervals resample the 10 instances of each task.</figcaption>
       </figure>
+      <div class="heat-legend" aria-hidden="true"><span>Per-instance q</span><i class="hl0"></i><span>0</span><i class="hlbar"></i><span>1</span></div>
       <div class="table-wrap">
         <table class="tasks" id="taskTable">
-          <caption class="sr">Per-task results. Activate a row to show its instruction and development evidence.</caption>
+          <caption class="sr">Per-task results. Activate a task name to show its instruction and development evidence.</caption>
           <thead><tr>
             <th scope="col" class="c-id">ID</th>
             <th scope="col">Task</th>
-            <th scope="col">Policy</th>
+            <th scope="col">Checkpoint</th>
             <th scope="col" class="c-num">Stage</th>
             <th scope="col" class="c-num">Expected</th>
             <th scope="col" class="c-num">Realized</th>
@@ -222,60 +304,122 @@
           </tr></thead>
           <tbody id="taskBody"></tbody>
         </table>
+        <button type="button" class="btn sm more" id="tableMore" hidden></button>
       </div>
     </div>
   </section>
 
-  <!-- 7. Analysis -->
+  <!-- Analysis -->
   <section id="analysis" class="sec">
     <div class="wrap">
       <div class="sec-head"><span class="sec-num">06</span><h2>What the numbers say</h2></div>
       <div class="grid2">
         <figure class="fig card">
-          <figcaption class="fig-title">Development estimates are optimistic but rank tasks well</figcaption>
+          <h3 class="fig-title">Development estimates rank tasks moderately well but are optimistic</h3>
+          <div class="fig-tools"><label class="tog"><input type="checkbox" id="calCI"> Show 95% intervals</label></div>
           <div class="chart ch-sq" id="calChart"></div>
-          <div class="legend" id="calLegend"></div>
-          <figcaption id="calCap"></figcaption>
+          <div class="legend">
+            <span><i class="sw-dot" style="background:var(--d0)"></i>0 own rollouts</span>
+            <span><i class="sw-dot" style="background:var(--d1)"></i>1</span>
+            <span><i class="sw-dot" style="background:var(--d2)"></i>2 or more</span>
+            <span><i class="sw-ring"></i>stage 1</span>
+            <span><i class="sw-dot" style="background:var(--ink-2)"></i>stage 2</span>
+            <span><i class="sw-line" style="background:var(--axis)"></i>y = x</span>
+          </div>
+          <figcaption>Each dot is a task: expected q at freeze against realized mean q on instances 301–310, coloured by how many of its own development rollouts the routed checkpoint had. Spearman <span data-bind="calibration.spearman" data-fmt="f2">0.68</span>, Pearson <span data-bind="calibration.pearson" data-fmt="f2">0.60</span>; mean expected <span data-bind="calibration.mean_expected" data-fmt="f3">0.206</span> against realized <span data-bind="calibration.mean_realized" data-fmt="f3">0.156</span>, optimistic by <span data-bind="calibration.mean_expected - calibration.mean_realized" data-fmt="f3">0.050</span> on average. Tasks at q = 0 are jittered by up to 4 px.</figcaption>
         </figure>
         <figure class="fig card">
-          <figcaption class="fig-title">Most episodes earn little or no credit</figcaption>
+          <h3 class="fig-title">Most episodes earn little or no credit</h3>
           <div class="chart ch-sm" id="histChart"></div>
-          <figcaption id="histCap"></figcaption>
+          <figcaption><span data-bind="histogram.0" data-fmt="int">642</span> of <span data-bind="headline.episodes" data-fmt="int">1,000</span> episodes score below 0.1, and <span data-bind="headline.episodes - headline.episodes_nonzero" data-fmt="int">636</span> score exactly zero. <span data-bind="histogram.9" data-fmt="int">37</span> reach 0.9 or more; <span data-bind="headline.successes" data-fmt="int">37</span> are full successes.</figcaption>
           <details class="dt"><summary>Show data</summary><div id="histTable"></div></details>
         </figure>
         <figure class="fig card">
-          <figcaption class="fig-title">Development rollouts concentrate on one instance</figcaption>
+          <h3 class="fig-title">Development rollouts concentrate on one instance</h3>
           <div class="chart ch-sm" id="devChart"></div>
-          <figcaption id="devCap"></figcaption>
+          <figcaption><span data-bind="breakdown.share_313_eligible" data-fmt="pct0">47%</span> of eligible rollouts (<span data-bind="share_313" data-fmt="pct0">57%</span> of all <span data-bind="headline.dev_rollouts" data-fmt="int">1,146</span>) used instance 313. The development split is 311–320, but no rollout in the ledger used 320.</figcaption>
           <details class="dt"><summary>Show data</summary><div id="devTable"></div></details>
         </figure>
         <figure class="fig card">
-          <figcaption class="fig-title">Rollouts needed to separate two policies</figcaption>
+          <h3 class="fig-title">Telling two policies apart takes many rollouts</h3>
           <div class="chart ch-sm" id="powChart"></div>
-          <figcaption id="powCap"></figcaption>
+          <div class="legend">
+            <span><i class="sw-dot" style="background:var(--ink)"></i>significance test</span>
+            <span><i class="sw-ring" style="border-color:var(--ink-2)"></i>pick the better one with 80% probability</span>
+          </div>
+          <figcaption>Rollouts per policy for a given difference in mean q. Detecting a 0.05 difference with a significance test takes <span data-bind="power.0.05" data-fmt="int">251</span> rollouts each; merely picking the better of the two takes <span data-bind="breakdown.selection_n.0.05" data-fmt="int">23</span>. σ = <span data-bind="headline.within_task_sd" data-fmt="f2">0.20</span> pools instance and rollout variation (<span data-bind="breakdown.within_sd_nonzero_tasks" data-fmt="f3">0.237</span> excluding zero-score tasks).</figcaption>
           <details class="dt"><summary>Show data</summary><div id="powTable"></div></details>
         </figure>
       </div>
-      <figure class="fig card stagefig">
-        <figcaption class="fig-title">Stage 1 vs stage 2</figcaption>
-        <div class="chart ch-stage" id="stageChart"></div>
-        <div id="stageTable"></div>
+
+      <h3 class="sub">Where the optimism comes from</h3>
+      <p>The gap between expected and realized q is <span data-bind="breakdown.by_depth.0.gap_points" data-fmt="sp1">+1.5</span> and <span data-bind="breakdown.by_depth.1.gap_points" data-fmt="sp1">+4.1</span> task points where the routed checkpoint had 0 or 1 of its own development rollouts at freeze, and <span data-bind="breakdown.by_depth.2+.gap_points" data-fmt="sp1">−0.6</span> where it had 2 or more. Estimates that rested on a prior or a single rollout carried the optimism.</p>
+      <figure class="fig card">
+        <h3 class="fig-title">Expected and realized mean q by evidence depth and by stage</h3>
+        <div class="chart ch-opt" id="optChart"></div>
+        <div class="legend">
+          <span><i class="sw-tick"></i>expected q at freeze</span>
+          <span><i class="sw-dot" style="background:var(--ink)"></i>realized mean q</span>
+          <span><i class="sw-dot" style="background:var(--d0)"></i><i class="sw-dot" style="background:var(--d1)"></i><i class="sw-dot" style="background:var(--d2)"></i>own rollouts 0 / 1 / 2+</span>
+        </div>
+        <figcaption>Gap in task points = number of tasks × (expected − realized). Positive means the estimate was optimistic.</figcaption>
+        <div id="optTable"></div>
       </figure>
     </div>
   </section>
 
-  <!-- 8. Serving -->
+  <!-- Simulation -->
+  <section id="simulation" class="sec">
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-num">07</span><h2>Simulation study</h2></div>
+      <div class="narrow-in">
+        <p>Can the selector's claims be trusted? We simulate it. Each simulated world draws true task scores from the selector's own posterior on the real ledger, then re-draws every development rollout from Beta(θκ, (1−θ)κ) with κ ≈ <span data-bind="simulation.kappa" data-fmt="f2">1.48</span>, fitted to the reported episodes. Each world keeps the cells and rollout counts of the real ledger. Over <span data-bind="simulation.sims" data-fmt="int">300</span> worlds on tasks 50–99 we apply five selection rules and compare the Q each rule claims with the Q it truly gets.</p>
+      </div>
+      <div class="grid2">
+        <figure class="fig card">
+          <h3 class="fig-title">True and claimed Q by selection rule</h3>
+          <div class="chart ch-rules" id="rulesChart"></div>
+          <div class="legend">
+            <span><i class="sw-dot" style="background:var(--ink)"></i>true Q, mean of worlds</span>
+            <span><i class="sw-whisk"></i>90% range</span>
+            <span><i class="sw-ring"></i>claimed Q</span>
+          </div>
+          <figcaption>Ranking by raw development means overclaims by <span data-bind="simulation.rules.best dev mean.optimism" data-fmt="f2">0.12</span>; the posterior rules claim within <span data-bind="simulation.rules.best posterior.optimism" data-fmt="f3">0.003</span> of what they get. Reference only makes no claim.</figcaption>
+          <details class="dt"><summary>Show data</summary><div id="rulesTable"></div></details>
+        </figure>
+        <figure class="fig card">
+          <h3 class="fig-title">True Q as the development budget grows</h3>
+          <div class="chart ch-sm" id="budgetChart"></div>
+          <div class="legend">
+            <span><i class="sw-dot" style="background:var(--ink)"></i>strict rules (ours)</span>
+            <span><i class="sw-sq"></i>best dev mean</span>
+            <span><i class="sw-dia"></i>oracle</span>
+            <span><i class="sw-band"></i>90% range</span>
+          </div>
+          <figcaption>Each series repeats the study with every development cell's rollout count multiplied by 1, 2, 4 or 8. Perfect knowledge of the candidates (oracle) would add about <span data-bind="simulation.rules.oracle.true - simulation.rules.strict rules (ours).true" data-fmt="f2">0.04</span> over our rules at today's budget.</figcaption>
+          <details class="dt"><summary>Show data</summary><div id="budgetTable"></div></details>
+        </figure>
+      </div>
+      <div class="callout">
+        <p><strong>Our reported score on tasks 50–99 (<span data-bind="simulation.observed.realized" data-fmt="f3">0.151</span>) sits at the <span data-bind="simulation.observed.reported_percentile" data-fmt="ord">5th</span> percentile of simulated reporting runs</strong> (90% range <span data-bind="simulation.observed.reported_p05" data-fmt="f3">0.152</span>–<span data-bind="simulation.observed.reported_p95" data-fmt="f3">0.215</span>): unlucky, or the model is mildly misspecified.</p>
+        <p>Under a correctly specified model the strict rules cost about <span data-bind="simulation.rules.best posterior.true - simulation.rules.strict rules (ours).true" data-fmt="f3">0.007</span> in true Q against the best posterior, but they roughly halve the raw-development selection bias (<span data-bind="simulation.rules.strict rules (ours).raw_dev_gap" data-fmt="f2">0.05</span> against <span data-bind="simulation.rules.best posterior.raw_dev_gap" data-fmt="f2">0.09</span>). They are insurance against failures the model does not describe, such as broken ports or porting errors.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Serving -->
   <section id="serving" class="sec">
     <div class="wrap">
-      <div class="sec-head"><span class="sec-num">07</span><h2>Serving for the hidden test</h2></div>
+      <div class="sec-head"><span class="sec-num">08</span><h2>Serving for the hidden test</h2></div>
       <p class="lede">The organizers run the hidden test (instances 321–340) on their own machines. Our serving layer is fail-stop: it answers each query exactly as the published contract specifies, or it stops.</p>
       <figure class="fig">
         <div class="diagram" id="servingDiagram" role="img" aria-label="The organizers' evaluator talks to our fail-stop server over a websocket carrying msgpack frames. The server validates the contract, serves one task per container and one session, batches at most 10, uses a global chunk of K = 4 that divides the native replay of 32 or 20, bounds each query at 550 seconds, and calls the routed policy."></div>
+        <figcaption>Evaluator and server exchange msgpack frames over one websocket; the server calls the task's routed checkpoint.</figcaption>
       </figure>
       <ul class="principles">
         <li><strong>No retries.</strong> A failed query is not re-sent.</li>
-        <li><strong>No substitute actions.</strong> The server never invents an action the policy did not produce.</li>
-        <li><strong>No fallback checkpoint.</strong> Each task is served by its routed policy only.</li>
+        <li><strong>No substitute actions.</strong> The server never sends an action the policy did not produce.</li>
+        <li><strong>No fallback checkpoint.</strong> Each task is served by its routed checkpoint only.</li>
         <li><strong>No automatic restart.</strong> A stopped server stays stopped.</li>
         <li><strong>Malformed frames or non-finite actions</strong> end the session with close code <code>1011</code>.</li>
         <li><strong>A second connection</strong> is refused with close code <code>1013</code>.</li>
@@ -283,36 +427,76 @@
     </div>
   </section>
 
-  <!-- 9. Disclosures -->
+  <!-- Reproduce -->
+  <section id="reproduce" class="sec">
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-num">09</span><h2>Reproduce</h2></div>
+      <div class="repro">
+        <div>
+          <h3>Route hashes</h3>
+          <dl class="hashes">
+            <div><dt>Canonical route, SHA-256</dt><dd><code data-bind="hashes.route_canonical_sha256" data-fmt="raw">adb6f400a503a3bbdca961260514f64a4c854b341f3021ae397f4fad8467d7e1</code><button type="button" class="btn sm copy" data-copy="hashes.route_canonical_sha256" aria-label="Copy canonical route hash">Copy</button></dd></div>
+            <div><dt>Stage-1 table, SHA-256</dt><dd><code data-bind="hashes.stage1_table_sha256" data-fmt="raw">e577df0ff82353c8a89ea6fbc86320c0720fcb263c4108b33f2ae7f0051dbc76</code><button type="button" class="btn sm copy" data-copy="hashes.stage1_table_sha256" aria-label="Copy stage-1 table hash">Copy</button></dd></div>
+            <div><dt>Stage-2 table, SHA-256</dt><dd><code data-bind="hashes.stage2_table_sha256" data-fmt="raw">dfa337a9417e8de406fc26bfc4fac8d540c2c419b84145314761d3a62dbc814e</code><button type="button" class="btn sm copy" data-copy="hashes.stage2_table_sha256" aria-label="Copy stage-2 table hash">Copy</button></dd></div>
+            <div><dt>Stage-2 route frozen</dt><dd><span data-bind="hashes.stage2_frozen_utc" data-fmt="utc">2026-10-13 at 12:54 UTC</span></dd></div>
+          </dl>
+          <h3>Commands</h3>
+          <div class="codebox">
+            <div class="bib-head"><span class="lbl">Shell</span><button type="button" class="btn sm copy" data-copy-el="cmds">Copy</button></div>
+<pre id="cmds"><code>pip install -e ".[dev]"
+python -m policybank score     # Q and its 95% CI
+python -m policybank select    # re-run stage-2 selection
+python -m policybank simulate  # simulation study</code></pre>
+          </div>
+        </div>
+        <div>
+          <h3>Downloads</h3>
+          <ul class="downloads">
+            <li><a href="data/official_episodes.csv" download>official_episodes.csv</a> <span class="fsize" data-size="data/official_episodes.csv">(181 KB)</span><span class="dd">All <span data-bind="headline.episodes" data-fmt="int">1,000</span> public-instance episodes, one row per metric file.</span></li>
+            <li><a href="data/dev_rollouts.csv" download>dev_rollouts.csv</a> <span class="fsize" data-size="data/dev_rollouts.csv">(116 KB)</span><span class="dd">The development ledger: <span data-bind="headline.dev_rollouts" data-fmt="int">1,146</span> rollouts.</span></li>
+            <li><a href="data/route.json" download>route.json</a> <span class="fsize" data-size="data/route.json">(29 KB)</span><span class="dd">The frozen route with expected q, fallbacks and table hashes.</span></li>
+            <li><a href="data/tasks.json" download>tasks.json</a> <span class="fsize" data-size="data/tasks.json">(28 KB)</span><span class="dd">Task names, scenes, demonstration lengths and instructions.</span></li>
+            <li><a href="data/policies.json" download>policies.json</a> <span class="fsize" data-size="data/policies.json">(4.2 KB)</span><span class="dd">Checkpoint sources, revisions, lineage and licence status.</span></li>
+            <li><a href="data/results.json" download>results.json</a> <span class="fsize" data-size="data/results.json">(71 KB)</span><span class="dd">Every number on this page.</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Disclosures -->
   <section id="disclosures" class="sec">
     <div class="wrap narrow">
-      <div class="sec-head"><span class="sec-num">08</span><h2>Disclosures</h2></div>
+      <div class="sec-head"><span class="sec-num">10</span><h2>Disclosures</h2></div>
       <ol class="disc">
         <li><strong>Simulator version.</strong> Public results were produced with Isaac Sim 6.0.1, because Isaac Sim 5.1 was incompatible with the cluster's driver. The organizers allowed Isaac 6 for public results; hidden evaluation uses 5.1.</li>
-        <li><strong>What Q = 0.156 is.</strong> It is a self-evaluated score on the public instances. It is not a hidden-test score and not a placement.</li>
+        <li><strong>What Q = 0.156 is.</strong> It is a self-evaluated score on the public instances. It is not a hidden-test score and not a placement. Its 95% CI resamples instances within tasks; it does not cover selection, the simulator-version shift or the hidden-instance draw.</li>
         <li><strong>Duplicate cells.</strong> Two cells completed twice. In both, the first completed attempt was kept regardless of score: <em>spraying for bugs</em>, instance 307 (kept 0.5, excluded 0.0), and <em>cook brussels sprouts</em>, instance 303 (kept 0.0, excluded 0.0).</li>
-        <li><strong>Replay settings.</strong> Of the <span data-bind="headline.episodes" data-fmt="int">–</span> episodes, <span data-bind="replay_counts.32" data-fmt="int">–</span> ran with replay 32 and <span data-bind="replay_counts.20" data-fmt="int">–</span> with replay 20. The other <span data-bind="replay_counts.0" data-fmt="int">–</span> ran with replay 0 (one model query per step) in a recovery pass.</li>
+        <li><strong>Replay settings.</strong> Of the <span data-bind="headline.episodes" data-fmt="int">1,000</span> episodes, <span data-bind="replay_counts.32" data-fmt="int">716</span> ran with replay 32 and <span data-bind="replay_counts.20" data-fmt="int">277</span> with replay 20. The other <span data-bind="replay_counts.0" data-fmt="int">7</span> ran with replay 0 (one model query per step) in a recovery pass.</li>
         <li><strong>Scorer denominator.</strong> The organizer scorer copy used a 20-instance denominator, which gives 0.078; the published contract uses 10. No file was edited.</li>
         <li><strong>Weights and licences.</strong> Model weights are not redistributed here. Redistribution terms for the Comet-derived and amyjia checkpoints are unresolved.</li>
         <li><strong>Qualification status.</strong> Synthetic-input GPU startup tests passed on an RTX 3090 for all ten models. No full end-to-end hidden-protocol qualification (Isaac 5.1, 1 FPS, Turing GPU) has been completed.</li>
+        <li><strong>Isolation test.</strong> A stricter isolation test (restricted file writes and outbound connections) failed for all ten images because CUDA reported no visible GPU; we have not established whether the test harness or the images cause it.</li>
+        <li><strong>Unreleased logs.</strong> Numbers marked † come from pipeline logs not included in the release.</li>
       </ol>
     </div>
   </section>
 
-  <!-- 10. Credits & citation -->
+  <!-- Credits & citation -->
   <section id="cite" class="sec">
     <div class="wrap narrow">
-      <div class="sec-head"><span class="sec-num">09</span><h2>Credits &amp; citation</h2></div>
+      <div class="sec-head"><span class="sec-num">11</span><h2>Credits &amp; citation</h2></div>
       <p>This work stands on public releases and shared compute. We thank Team Comet (openpi-comet); Physical Intelligence (OpenPI, π0 and π0.5); Google (PaliGemma and Gemma); Ilia Larchenko, Gleb Zarin and Akash Karnatak (the 2025 winning solution); ymetz, JackLiu0406 and amyjia1212 for their public checkpoints; the Stanford BEHAVIOR-1K team; and TACC (Stampede3) for compute.</p>
-      <div class="bib">
-        <div class="bib-head"><span class="lbl">BibTeX</span><button type="button" class="btn sm" id="copyBib">Copy</button></div>
+      <p>Code: <a href="https://github.com/FungousLand1941/policy-bank">github.com/FungousLand1941/policy-bank</a></p>
+      <div class="codebox">
+        <div class="bib-head"><span class="lbl">BibTeX</span><button type="button" class="btn sm copy" data-copy-el="bibtex">Copy</button></div>
 <pre id="bibtex"><code>@techreport{kanr2026policybank,
   title  = {Policy Bank: Development-Selected Routing of Public Robot Policies for {BEHAVIOR-1K}},
   author = {Balakrishna, Keshav and Gangerapu, Abhijay and Satarla, Rithik},
   institution = {Team KANR (Independent)},
   year   = {2026},
   note   = {2026 BEHAVIOR Challenge technical report},
-  url    = {https://github.com/FungousLand1941/policy-bank}
+  url    = {https://policy-bank.vercel.app}
 }</code></pre>
       </div>
     </div>
@@ -327,5 +511,6 @@
 </footer>
 
 <div class="tip" id="tip" role="tooltip" hidden></div>
+<div class="sr" id="chartLive" aria-live="polite"></div>
 </body>
 </html>

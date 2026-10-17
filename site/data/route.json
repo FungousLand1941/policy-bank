@@ -2,6 +2,7 @@
  "schema": "policy-bank-route/1",
  "stage2_frozen_utc": "2026-10-13T12:54:00Z",
  "manifest_built_utc": "2026-10-16T01:01:15Z",
+ "route_sha256": "adb6f400a503a3bbdca961260514f64a4c854b341f3021ae397f4fad8467d7e1",
  "stage1_table_sha256": "e577df0ff82353c8a89ea6fbc86320c0720fcb263c4108b33f2ae7f0051dbc76",
  "stage2_table_sha256": "dfa337a9417e8de406fc26bfc4fac8d540c2c419b84145314761d3a62dbc814e",
  "tasks": [
