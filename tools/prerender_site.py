@@ -255,6 +255,8 @@ def human_size(n: int) -> str:
 BIND_RE = re.compile(r'<(\w+)(\s[^>]*?\bdata-bind="([^"]+)"[^>]*)>(.*?)</\1>', re.S)
 FMT_RE = re.compile(r'\bdata-fmt="([^"]+)"')
 SIZE_RE = re.compile(r'(<span\b[^>]*\bdata-size="([^"]+)"[^>]*>)(.*?)(</span>)', re.S)
+# <meta content="..." data-tpl="... {path|fmt} ..."> : content is rewritten from the template.
+TPL_RE = re.compile(r'<meta\b[^>]*\bdata-tpl="([^"]*)"[^>]*>')
 
 
 def block(page: str, name: str, content: str) -> str:
@@ -277,6 +279,22 @@ def render(page: str, D) -> tuple[str, list[str]]:
         return f"<{tag}{attrs}>{E(fmt(v, f.group(1) if f else 'raw'))}</{tag}>"
 
     page = BIND_RE.sub(bind, page)
+
+    def fill(tpl: str) -> str:
+        def one(m):
+            v = eval_bind(D, m.group(1))
+            if v is None:
+                missing.append(m.group(1))
+                return m.group(0)
+            return fmt(v, m.group(2))
+
+        return re.sub(r"\{([^{}|]+)\|(\w+)\}", one, html.unescape(tpl))
+
+    def meta(m):
+        val = fill(m.group(1)).replace("&", "&amp;").replace('"', "&quot;").replace("<", "&lt;")
+        return re.sub(r'\bcontent="[^"]*"', lambda _: f'content="{val}"', m.group(0), count=1)
+
+    page = TPL_RE.sub(meta, page)
     color, _ = assign_colors(D["policies"])
     page = block(page, "teaser", teaser_svg(D, color))
     page = block(page, "bank", bank_cards(D, color))
