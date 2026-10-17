@@ -333,6 +333,8 @@ def test_keepalive_detects_a_silent_peer():
         raw.sendall(request.encode())
         assert b" 101 " in raw.recv(4096)                   # upgraded; from now on we never read or pong
         deadline = time.monotonic() + 5
+        while r.server.sessions < 1 and time.monotonic() < deadline:     # the handler has registered it
+            time.sleep(0.02)
         while r.server.active is not None and time.monotonic() < deadline:
             time.sleep(0.05)
         assert r.server.active is None

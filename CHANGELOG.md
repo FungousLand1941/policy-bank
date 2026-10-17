@@ -27,7 +27,7 @@ First public release of Team KANR's 2026 BEHAVIOR Challenge technical report, co
 - `metrics`: challenge Q, a bootstrap CI that is rescaled for ten instances and independent of input
   order, rollout noise, and power for testing and for selection.
 - `selection`: transfer and paired-level priors, conjugate updates, switching rules (development
-  guard, margin, veto, scope) and the exact one-checkpoint-per-training-run search.
+  guard, margin, veto, scope) and the one-checkpoint-per-training-run search (exhaustive within a run, greedy across runs).
 - `simulate`: posterior-predictive study of selection rules.
 - `routing` and `provenance`: canonical route hash, metrics-file audit, score-blind duplicate
   resolution, and `policybank verify`.
@@ -37,7 +37,7 @@ First public release of Team KANR's 2026 BEHAVIOR Challenge technical report, co
   - Failures: upstream failures are terminal (close code 1011); a second session is refused (1013).
   - `OpenPIRemotePolicy` fronts real OpenPI-compatible checkpoints, with optional reset forwarding.
 - CLI: `python -m policybank {score,route,select,simulate,analyze,verify,serve}`.
-- 126 tests (unit, property, serving integration, CLI subprocess). CI covers:
+- 127 tests (one skipped on Windows) (unit, property, serving integration, CLI subprocess). CI covers:
   - the tests and ruff on Python 3.10–3.13;
   - a check that every number in the paper still regenerates from the data;
   - a container smoke test.

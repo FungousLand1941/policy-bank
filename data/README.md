@@ -10,6 +10,7 @@ identifiers and run directories are removed. Everything else is kept.
 | `route.json` | 100 | frozen route: policy, stage (1/2), posterior expected q at freeze, fallback and its expected q; canonical SHA-256 of the route (`route_sha256`, see `policybank.routing.Route`) and SHA-256 of the original route tables |
 | `official_episodes.csv` | 1,000 | reported episodes (instances 301–310): q, success, steps, simulated seconds, normalized time, normalized arm/base distances, replay length, finish time (UTC), SHA-256 of the unchanged metrics file |
 | `dev_rollouts.csv` | 1,146 | development ledger (instances 311–319): run label, policy label, q, success, steps, normalized time, flags for evaluation-time variants and non-default robot configuration, finish time (UTC) |
+| `metrics/` | 1,000 | the unchanged evaluator metric files, byte for byte (`<task>_<instance>_0.json`); `python -m policybank verify data/metrics --check-hashes` checks them against `official_episodes.csv` |
 | `duplicates.json` | 2 | the two duplicate completed cells and the score-blind decision taken |
 
 Notes

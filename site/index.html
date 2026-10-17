@@ -165,7 +165,7 @@
         </div>
         <div>
           <h3>Prior for tasks 50–99</h3>
-          <p>These tasks have no reference. The prior is policy-level: the reference policy's level plus the mean paired difference on shared tasks, shrunk toward the policy's family and widened by a between-task s.d. of 0.1.</p>
+          <p>These tasks have no reference. The prior is policy-level: the reference policy's level plus the mean paired difference on shared tasks, shrunk toward a weak N(0.1, 0.1²) hyperprior and widened by a between-task s.d. of 0.1.</p>
         </div>
       </div>
 
@@ -375,7 +375,7 @@
     <div class="wrap">
       <div class="sec-head"><span class="sec-num">07</span><h2>Simulation study</h2></div>
       <div class="narrow-in">
-        <p>We simulate our own procedure to see which selection rules deliver and which overclaim. The results hold <em>within the model</em>: each simulated world draws true task scores from the selector's own posterior on the real ledger, so the selector's self-consistency is close to guaranteed when the likelihood matches. The informative comparisons are between rules, and under a non-Gaussian outcome model: a rollout scores exactly 0 with probability (1−θ)<sup>c</sup>, c = <span data-bind="simulation.zero_c" data-fmt="f1">4.0</span>, and otherwise follows a Beta distribution with mean θ and concentration κ = <span data-bind="simulation.kappa" data-fmt="f2">6.42</span>. This reproduces the share of exact zeros (<span data-bind="simulation.zero_share_official" data-fmt="f3">0.636</span> in the reported episodes, <span data-bind="simulation.zero_share_dev" data-fmt="f3">0.740</span> in the development ledger), which the veto rule depends on.</p>
+        <p>We simulate our own procedure to see which selection rules deliver and which overclaim. The results hold <em>within the model</em>: each simulated world draws true task scores from the selector's own posterior on the real ledger, so the selector's self-consistency is close to guaranteed when the likelihood matches. The informative comparisons are between rules, and under a non-Gaussian outcome model: a rollout scores exactly 0 with probability (1−θ)<sup>c</sup>, c = <span data-bind="simulation.zero_c" data-fmt="f1">4.0</span>, and otherwise follows a Beta distribution whose mean, θ/(1−π₀), keeps the overall mean at θ, with concentration κ = <span data-bind="simulation.kappa" data-fmt="f2">6.42</span>. This reproduces the share of exact zeros (<span data-bind="simulation.zero_share_official" data-fmt="f3">0.636</span> in the reported episodes, <span data-bind="simulation.zero_share_dev" data-fmt="f3">0.740</span> in the development ledger), which the veto rule depends on.</p>
         <p>Each world follows a template of <span data-bind="simulation.template_rollouts" data-fmt="int">360</span> development rollouts from the real ledger on tasks 50–99, keeping their cells and counts. Over <span data-bind="simulation.sims" data-fmt="int">300</span> worlds we apply five selection rules and compare the Q each rule claims with the Q it delivers.</p>
       </div>
       <div class="grid2">

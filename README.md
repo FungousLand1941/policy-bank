@@ -29,8 +29,8 @@ the main route froze). Conservative switching rules then guard each change of po
 | Tasks with any credit / full successes | 71 tasks / 37 episodes in 15 tasks |
 | Expected vs realized | Spearman 0.68 across tasks; mean 0.206 → 0.156 |
 | Where the optimism sits | +1.5 and +4.1 task points where the routed policy had 0 or 1 own dev rollouts; −0.6 with ≥ 2 |
-| Simulation (tasks 50–99, within the model) | raw-mean selection delivers less (0.182 vs 0.186) and overclaims by 0.12; posterior claims stay honest (+0.002); an oracle adds only 0.043 |
-| Selector reimplementation vs frozen stage-2 route | 48 / 50 tasks, including all 8 non-default picks |
+| Simulation (tasks 50–99, within the model, zero-inflated Beta outcomes) | raw-mean selection delivers less than our rules (0.182 vs 0.186) and overclaims by 0.12; posterior claims stay honest (+0.002); an oracle adds only 0.043 |
+| Selector reimplementation vs frozen stage-2 route | 48 / 50 tasks, including all 8 non-default picks (routing ymetz everywhere: 42) |
 
 Q is a self-evaluated score on public instances, not a hidden-test result. See
 [Disclosures](#disclosures).
@@ -40,7 +40,7 @@ Q is a self-evaluated score on public instances, not a hidden-test result. See
 ```bash
 git clone https://github.com/FungousLand1941/policy-bank && cd policy-bank
 pip install -e ".[dev]"             # numpy, msgpack, websockets, pytest, ruff
-python -m pytest -q                 # 125 tests, ~40 s
+python -m pytest -q                 # 127 tests, ~40 s (one is skipped on Windows)
 python -m policybank score          # Q = 0.156054 (95% CI 0.1434-0.1685)
 python -m policybank route --images # one serving image per policy and its tasks
 python -m policybank select         # re-run the stage-2 selection against the frozen route
@@ -63,7 +63,7 @@ python -m policybank verify data/metrics --check-hashes
 ```
 policybank/            Python package
   metrics.py           challenge Q, rescaled bootstrap CI, rollout noise, power for testing and for selection
-  selection.py         priors, conjugate updates, switching rules, exact one-checkpoint-per-family search
+  selection.py         priors, conjugate updates, switching rules, one-checkpoint-per-training-run search
   simulate.py          posterior-predictive simulation of selection rules (zero-inflated Beta outcomes)
   routing.py           frozen route: validation, canonical SHA-256, image map
   provenance.py        metrics-file audit, coverage, score-blind duplicate resolution, directory verification
@@ -75,7 +75,7 @@ results/summary.json   output of `policybank analyze`
 paper/                 LaTeX source, generated numbers/tables/figures, compiled PDF
 site/                  static project page (deployed on Vercel)
 tools/                 dataset build, figures, tables, site export and prerender
-tests/                 125 tests (unit, property, serving, CLI subprocess)
+tests/                 127 tests (unit, property, serving, CLI subprocess)
 ```
 
 To regenerate the paper's numbers, figures and website data from `data/`:
@@ -95,17 +95,20 @@ any number in the paper drifts from the data.
 ## The selector
 
 Each (task, policy) pair gets a Gaussian prior on its expected score.
-- **Tasks 0–49** have public 2025 per-task results. We scale them by a transfer factor estimated from
-  our own development rollouts on the other tasks (`transfer_prior`, `estimate_transfer_factor`).
+- **Tasks 0–49** have public 2025 per-task results. We scale them by a transfer factor. For Comet pt50
+  it is estimated from our own development rollouts on the other tasks (`transfer_prior`,
+  `estimate_transfer_factor`); for the winner checkpoints it was fixed before stage 2†.
 - **Tasks 50–99** have no reference. A policy's level is the reference policy's level plus its mean
   paired difference on shared tasks, with the decided task left out. That level is shrunk toward a
   weak hyperprior and widened by the between-task spread (`paired_level`, `flat_level_prior`).
 
 Development rollouts update the prior conjugately (`update`). The switching rules differ by task range:
-- **Tasks 0–49:** a challenger replaces the incumbent only if it has ≥ 2 of its own rollouts, beats
-  the incumbent on ≥ 2 shared development instances, gains ≥ 0.01, and is not vetoed.
-- **Tasks 50–99:** the highest eligible posterior wins if it gains ≥ 0.01, subject to the veto. A
-  specialist is a candidate only on the tasks it has rollouts for. When two steps of one training
+- **Tasks 0–49 (the 13 routed in stage 2):** a challenger replaces the incumbent only if it has ≥ 2 of
+  its own rollouts, beats the incumbent on ≥ 2 shared development instances, gains ≥ 0.01, and is
+  not vetoed.
+- **Tasks 50–99:** the highest eligible posterior wins if it gains ≥ 0.01 over the reference policy,
+  subject to the veto. A specialist is a candidate only on the tasks it has rollouts for, and only
+  with ≥ 2 rollouts in total. **One checkpoint per training run:** when two steps of one training
   run (the ymetz steps 6000 and 9999) win different tasks, every step is tried as the keeper and the
   best whole route is kept.
 
@@ -115,13 +118,17 @@ The paper's Algorithm 1 and Table 2 list every hyperparameter.
 
 `policybank.serving` implements the hidden-evaluation contract:
 - **One task, one session.** Each container serves one task and one evaluator session, with batches
-  of 1–10. Every new session starts from a reset policy.
+  of 1–10. A second concurrent connection is refused with close code 1013. Every new session starts
+  from a reset policy.
 - **Chunking.** The global chunk K=4 divides each policy's native replay of 32 or 20 actions, so the
   chunked stream equals the native one.
-- **Fail-stop.** Malformed input, nonfinite actions, model exceptions and timeouts are terminal (close
-  code 1011). There is no retry, no substitute action and no fallback checkpoint.
-- **Disconnects.** An evaluator disconnect is not a policy failure: its session simply ends. A
-  failing or disconnecting *upstream* policy server is a policy failure.
+- **Fail-stop.** Malformed input, nonfinite actions, model exceptions and per-query timeouts (550 s,
+  below the 600 s rule) are terminal (close code 1011) and stop the server. There is no retry, no
+  substitute action, no fallback checkpoint and no automatic restart.
+- **Disconnects.** An evaluator disconnect is not a policy failure: its session simply ends. Keepalive
+  pings (every 30 s) drop a peer that vanished without closing, so the evaluator's reconnect is not
+  refused as a second session. A failing or disconnecting *upstream* policy server is a policy
+  failure.
 - **Hung models.** Inference runs on a dedicated thread, and the CLI hard-exits after a failure, so a
   hung model cannot keep the container alive.
 
@@ -149,9 +156,9 @@ A non-root container image for the server lives in [`docker/`](docker/); CI buil
 - The scorer copy bundled with the simulator divides by a 20-instance pool and gives 0.078. The
   published contract uses 10 instances and gives 0.156. No scorer or metrics file was edited.
 - Some values in the paper come from pipeline logs that are not part of this release. The paper marks
-  them with †, for example the 860 rollouts behind the stage-2 freeze and the transfer factors.
-- **No model weights are redistributed here.** The winner checkpoints and the four-task specialist are
-  Apache-2.0 at the pinned revisions. The ymetz card defers to its base checkpoint's terms. We found
+  them with †, for example the 860† rollouts behind the stage-2 freeze and the transfer factors.
+- **No model weights are redistributed here.** The publishers of the winner checkpoints and the
+  four-task specialist declare Apache-2.0 at the pinned revisions. The ymetz card defers to its base checkpoint's terms. We found
   no explicit licence for the separately hosted Comet weights or the specialist used on tasks 96–97.
 - **Hidden-evaluation readiness is unverified.**
   - All ten native images passed GPU startup and synthetic batch-1/batch-10 tests on an RTX 3090.

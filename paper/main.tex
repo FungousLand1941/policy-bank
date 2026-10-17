@@ -121,7 +121,7 @@ Let $\theta_{tp}$ be the expected score of policy $p$ on task $t$. We place a Ga
 \theta_{tp}\mid y \sim \mathcal N\!\left(\frac{\mu_{tp}/\tau_{tp}^2 + n\bar y/\sigma_p^2}{1/\tau_{tp}^2+n/\sigma_p^2},\;\Big(\frac{1}{\tau_{tp}^2}+\frac{n}{\sigma_p^2}\Big)^{-1}\right).
 \label{eq:post}
 \end{equation}
-The rollout variance is the pooled within-task variance of $p$'s development rollouts, shrunk toward a default: $\hat\sigma_p^2=\max\{0.01,\,(\mathrm{SS}_p+\nu_0\sigma_0^2)/(\mathrm{df}_p+\nu_0)\}$ with $\sigma_0^2=0.08$ and $\nu_0=4$. Rollout scores are bounded and often bimodal, so the Gaussian likelihood is an approximation whose job is to weigh a prior against a handful of rollouts. Section~\ref{sec:sim} checks it against Beta-distributed outcomes.
+The rollout variance is the pooled within-task variance of $p$'s development rollouts, shrunk toward a default: $\hat\sigma_p^2=\max\{0.01,\,(\mathrm{SS}_p+\nu_0\sigma_0^2)/(\mathrm{df}_p+\nu_0)\}$ with $\sigma_0^2=0.08$ and $\nu_0=4$. Rollout scores are bounded and often bimodal, so the Gaussian likelihood is an approximation whose job is to weigh a prior against a handful of rollouts. Section~\ref{sec:sim} checks it against zero-inflated Beta outcomes.
 
 \subsection{Priors where public reference results exist (tasks 0--49)}
 For the first 50 tasks, per-task results of the Comet and winner checkpoints from 2025 are public. They come from a different simulator setup and different instances, so we scale them by a transfer factor:
@@ -135,7 +135,7 @@ Tasks 50--99 are new in 2026, so no per-task results exist. We estimate a \emph{
 \begin{equation}
 \ell_{p,-t}=\ell_{\mathrm{ref},-t}+\frac{1}{|S_{p,-t}|}\sum_{u\in S_{p,-t}}\big(\bar y_{up}-\bar y_{u,\mathrm{ref}}\big),\qquad S_{p,-t}=\{u\neq t:\ \text{both ran }u\}.
 \end{equation}
-Pairing removes much of the between-task variation. The level's standard error combines the reference level's error with the standard error of the mean paired difference, whose standard deviation is floored at 0.05 (and set to 0.25 when only one task is shared); this is conservative because it ignores their negative covariance. Levels are clipped at 0. Each level is combined with a weak hyperprior $\mathcal N(0.1,0.1^2)$ and widened by a between-task standard deviation $\tau_b=0.1$ to give $(\mu_{tp},\tau_{tp})$.
+Pairing removes much of the between-task variation. The level's standard error combines the reference level's error with the standard error of the mean paired difference, whose standard deviation is floored at 0.05 (and set to 0.25 when only one task is shared), treating the two as independent. Levels are clipped at 0. Each level is combined with a weak hyperprior $\mathcal N(0.1,0.1^2)$ and widened by a between-task standard deviation $\tau_b=0.1$ to give $(\mu_{tp},\tau_{tp})$.
 
 \paragraph{Worked example.} On \code{vacuuming\_floors} (task 69), the released code gives the ymetz checkpoint a level of $\ExLevel\pm\ExLevelSd$, a prior of $\ExPrior\pm\ExPriorSd$ and, with rollout variance $\ExNoise$, a posterior of $\ExPost\pm\ExPostSd$ after its single development rollout scored 0. The original pipeline also pooled each level with the other step of the same training run: its candidate report of 12 October gave $0.184\pm0.111$ moving to $0.160$\pl{} for the same rollout, and the frozen table of 13 October, built from more rollouts, records 0.166.
 
@@ -220,7 +220,7 @@ veto threshold & incumbent score that makes a zero count against a challenger & 
 \node[box, text width=24mm] (bank) {Policy bank\\{\footnotesize 10 checkpoints, native adapters}};
 \node[box, right=of bank, text width=25mm] (dev) {Dev rollouts\\{\footnotesize instances 311--320}};
 \node[hot, right=of dev, text width=27mm] (post) {Posterior per (task, policy)\\{\footnotesize priors + conjugate update}};
-\node[hot, right=of post, text width=24mm] (rules) {Switching rules\\{\footnotesize guard, margin, veto, family}};
+\node[hot, right=of post, text width=24mm] (rules) {Switching rules\\{\footnotesize guard, margin, veto, training run}};
 \node[box, below=7mm of rules, text width=24mm] (route) {Frozen route\\{\footnotesize SHA-256}};
 \node[box, left=of route, text width=27mm] (eval) {First completed run per cell\\{\footnotesize instances 301--310}};
 \node[box, left=of eval, text width=25mm] (audit) {Audit + score\\{\footnotesize $Q=\Qval$}};

@@ -15,8 +15,8 @@ Two prior constructions are provided:
   hyperprior and widened by the between-task spread.
 
 This module is a clean reimplementation of the selection logic used for the frozen route.  The
-original pipeline additionally pooled each level with the other members of its checkpoint
-family; the reimplementation uses the hyperprior only.  The frozen decisions themselves are
+original pipeline additionally pooled each level with the other step of the same training
+run; the reimplementation uses the hyperprior only.  The frozen decisions themselves are
 recorded in ``data/route.json``.
 """
 from __future__ import annotations
@@ -268,7 +268,7 @@ def one_per_family(decisions: Sequence[Decision], family: Mapping[str, str]) -> 
     """Quick heuristic: map each chosen policy to the family member with the largest gain.
 
     The gain of a member is its posterior gain over the fallback summed over the tasks it
-    *won*.  :func:`select_by_level` uses the exact version instead (it re-decides the route for
+    *won*.  :func:`select_by_level` uses a fuller search instead (it re-decides the route for
     every possible keeper and keeps the one with the highest total expected score); this helper
     is kept for quick inspection of a set of decisions.
     """

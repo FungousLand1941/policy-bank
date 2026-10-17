@@ -11,7 +11,10 @@ see `policybank/serving/`) into a small image:
 - listens on port 8000; a `HEALTHCHECK` polls `GET /healthz` (200 `OK` while serving, 503 after a
   terminal failure, after which the process exits)
 - entrypoint `tini -- python -m policybank serve --host 0.0.0.0 --port 8000`; default arguments
-  `--replay 32 --chunk 4`
+  `--replay 32 --chunk 4` (the per-query timeout defaults to 550 s)
+- websocket keepalive pings every 30 s (connection dropped after 60 s without a pong), so an
+  evaluator that vanished without closing does not block its own reconnect with 1013; the evaluator's
+  client must answer pings, as standard websocket clients do
 
 Without `--upstream` the container serves the deterministic `ScriptedPolicy`. That is only useful for
 smoke tests and for checking evaluator wiring.
@@ -77,8 +80,10 @@ docker run -d --name pb-task-17 --restart no -p 8000:8000 \
   makes the container exit nonzero before `/healthz` comes up.
 - Run one task per container. The first query binds the task id, and a later query with a different
   task id is a terminal failure. Start a fresh container (and, if needed, upstream) for each task.
-- Resets are not forwarded upstream. OpenPI servers keep no per-episode state; the chunk queue in
-  this container is cleared on every reset and every new session.
+- By default resets are not forwarded upstream: plain OpenPI servers keep no per-episode state, and
+  the chunk queue in this container is cleared on every reset and every new session. For a native
+  BEHAVIOR server that keeps per-episode state and accepts `{"reset": True}`, add `--forward-reset`;
+  otherwise restart the upstream for every session.
 
 ## Smoke test
 
