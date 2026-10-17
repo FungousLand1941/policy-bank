@@ -247,9 +247,14 @@ def test_peer_disconnect_is_not_a_policy_failure():
     with r as uri:
         c = PolicyClient(uri)
         c.infer(np.zeros(61, np.float32), task_id=5)
-        c.ws.socket.close()                                              # abrupt drop, no close frame
+        import socket
         import time
-        time.sleep(0.3)
+        c.ws.socket.shutdown(socket.SHUT_RDWR)                           # abrupt drop, no close frame
+        c.ws.socket.close()
+        deadline = time.monotonic() + 5
+        while r.server.active is not None and time.monotonic() < deadline:
+            time.sleep(0.05)
+        assert r.server.active is None                                   # the session ended
         with PolicyClient(uri) as c2:
             assert c2.infer(np.zeros(61, np.float32), task_id=5)["action"].shape == (23,)
     assert not r.server.failed.is_set() and r.code == 0
@@ -304,3 +309,34 @@ def test_model_exception_is_terminal_and_health_turns_red():
             urllib.request.urlopen(http_url, timeout=5)
         assert getattr(e.value, "code", 503) == 503
     assert r.code == 1 and "device-side assert" in r.server.failure
+
+
+def test_keepalive_detects_a_silent_peer():
+    """A peer that completes the handshake and then goes silent (never answers pings) is dropped,
+    so a reconnect is not refused as a second session."""
+    import base64
+    import os
+    import socket
+    import time
+    from urllib.parse import urlparse
+
+    from policybank.serving.client import PolicyClient
+    r = Running(keepalive_s=0.2)
+    with r as uri:
+        u = urlparse(uri)
+        raw = socket.create_connection((u.hostname, u.port), timeout=5)
+        key = base64.b64encode(os.urandom(16)).decode()
+        crlf = "\r\n"
+        request = crlf.join([
+            "GET / HTTP/1.1", f"Host: {u.hostname}:{u.port}", "Upgrade: websocket", "Connection: Upgrade",
+            f"Sec-WebSocket-Key: {key}", "Sec-WebSocket-Version: 13", "", ""])
+        raw.sendall(request.encode())
+        assert b" 101 " in raw.recv(4096)                   # upgraded; from now on we never read or pong
+        deadline = time.monotonic() + 5
+        while r.server.active is not None and time.monotonic() < deadline:
+            time.sleep(0.05)
+        assert r.server.active is None
+        with PolicyClient(uri) as c2:
+            assert c2.infer(np.zeros(61, np.float32), task_id=5)["action"].shape == (23,)
+        raw.close()
+    assert not r.server.failed.is_set()

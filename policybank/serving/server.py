@@ -49,8 +49,11 @@ class PolicyFault(RuntimeError):
 
 class PolicyServer:
     def __init__(self, policy: Policy, spec: ContractSpec | None = None, *, query_timeout_s: float = 550.0,
-                 task_id: int | None = None):
+                 task_id: int | None = None, keepalive_s: float | None = 30.0):
         self.policy = policy
+        # Websocket pings detect a peer that vanished without closing (e.g. a dropped network), so
+        # its session ends and the evaluator's reconnect is not refused as a second session.
+        self.keepalive_s = keepalive_s
         self.spec = spec or ContractSpec(action_dim=policy.action_dim)
         self.query_timeout_s = query_timeout_s
         self.binding = {"task_id": task_id}
@@ -178,7 +181,9 @@ class PolicyServer:
                 self._loop.add_signal_handler(sig, self._stop.set)
         try:
             async with serve(self.handler, host, port, compression=None, max_size=128 * 1024 * 1024,
-                             max_queue=1, ping_interval=None, close_timeout=1,
+                             max_queue=1, ping_interval=self.keepalive_s,
+                             ping_timeout=None if self.keepalive_s is None else 2 * self.keepalive_s,
+                             close_timeout=1,
                              process_request=self.health) as server:
                 self.port = server.sockets[0].getsockname()[1] if server.sockets else port
                 LOG.info("SERVER_READY policy=%s chunk=%s replay=%s port=%s", self.policy.name,
