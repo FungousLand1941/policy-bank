@@ -138,6 +138,12 @@ def parse_tasks(raw: Path):
         tid, name, demo_s, scene, instruction = row[:5]
         tasks.append({"id": int(tid), "name": name, "demo_seconds": int(demo_s), "scene": scene,
                       "instruction": instruction})
+    prompts = raw / "task_mapping_100.json"   # BEHAVIOR task prompts, used where the table has none
+    if prompts.exists():
+        by_name = json.loads(prompts.read_text(encoding="utf-8"))
+        for t in tasks:
+            if not t["instruction"] and t["name"] in by_name:
+                t["instruction"] = by_name[t["name"]]["task"]
     tasks.sort(key=lambda t: t["id"])
     assert len(tasks) == 100 and [t["id"] for t in tasks] == list(range(100))
     return tasks

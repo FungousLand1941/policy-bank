@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Policy Bank · BEHAVIOR-1K</title>
+<meta name="description" content="Team KANR's technical report for the 2026 BEHAVIOR Challenge: ten public and lightly fine-tuned robot policies, each task routed to one of them using development rollouts only. Q = 0.156 on the public reporting instances.">
+<meta name="color-scheme" content="light dark">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Policy Bank: Development-Selected Routing of Public Robot Policies for BEHAVIOR-1K">
+<meta property="og:description" content="Team KANR · 2026 BEHAVIOR Challenge technical report. A bank of ten vision-language-action checkpoints, one routed per task from development rollouts only. Q = 0.156 (95% CI 0.144–0.168) over 1,000 public-instance episodes.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Policy Bank: Development-Selected Routing of Public Robot Policies for BEHAVIOR-1K">
+<meta name="twitter:description" content="Ten public robot policies, one routed per task from development rollouts only. Q = 0.156 on BEHAVIOR-1K public instances.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&display=swap">
+<link rel="stylesheet" href="styles.css">
+<script>try{var t=localStorage.getItem('pb-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<script src="app.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#abstract">Skip to content</a>
+
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="brand" href="#top" aria-label="Policy Bank, back to top">
+      <img src="favicon.svg" alt="" width="18" height="18">Policy Bank
+    </a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#method">Method</a>
+      <a href="#selector">Selector</a>
+      <a href="#bank">Bank</a>
+      <a href="#results">Results</a>
+      <a href="#analysis">Analysis</a>
+      <a href="#serving">Serving</a>
+      <a href="#disclosures">Disclosures</a>
+      <a href="#cite">Cite</a>
+    </nav>
+    <button class="theme-btn" id="themeBtn" type="button" aria-label="Switch to dark theme">
+      <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><circle cx="10" cy="10" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 3.5a6.5 6.5 0 0 1 0 13z" fill="currentColor"/></svg>
+    </button>
+  </div>
+</header>
+
+<main id="top">
+  <!-- 1. Hero -->
+  <section class="hero">
+    <div class="wrap">
+      <p class="kicker">Team KANR · 2026 BEHAVIOR Challenge · technical report</p>
+      <h1>Policy Bank: Development-Selected Routing of Public Robot Policies for BEHAVIOR-1K</h1>
+      <p class="authors">Keshav Balakrishna, Abhijay Gangerapu, Rithik Satarla</p>
+      <p class="affil">Independent</p>
+      <div class="links">
+        <a class="btn" href="paper.pdf"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 1.5h5l3.5 3.5v9.5h-8.5z M9 1.5V5h3.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>Paper</a>
+        <a class="btn" href="https://github.com/FungousLand1941/policy-bank"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5.5 4.5 2 8l3.5 3.5M10.5 4.5 14 8l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Code</a>
+        <a class="btn" href="https://github.com/FungousLand1941/policy-bank/tree/main/data"><svg viewBox="0 0 16 16" aria-hidden="true"><ellipse cx="8" cy="3.8" rx="5.5" ry="2" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M2.5 3.8v8.4c0 1.1 2.5 2 5.5 2s5.5-.9 5.5-2V3.8M2.5 8c0 1.1 2.5 2 5.5 2s5.5-.9 5.5-2" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>Data</a>
+        <a class="btn" href="https://behavior.stanford.edu/challenge/"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 3H3v10h10V9.5M9 2h5v5M14 2 7.5 8.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>BEHAVIOR Challenge</a>
+      </div>
+      <dl class="tiles" aria-label="Key numbers">
+        <div class="tile">
+          <dt>Q, public instances</dt>
+          <dd class="tv" data-bind="headline.Q" data-fmt="q3">–</dd>
+          <dd class="ts">95% CI <span data-bind="headline.Q_ci95.0" data-fmt="q3">–</span>–<span data-bind="headline.Q_ci95.1" data-fmt="q3">–</span></dd>
+        </div>
+        <div class="tile">
+          <dt>Episodes</dt>
+          <dd class="tv" data-bind="headline.episodes" data-fmt="int">–</dd>
+          <dd class="ts">10 instances × 100 tasks</dd>
+        </div>
+        <div class="tile">
+          <dt>Tasks with partial credit</dt>
+          <dd class="tv" data-bind="headline.nonzero_tasks" data-fmt="int">–</dd>
+          <dd class="ts">of 100; <span data-bind="headline.zero_tasks" data-fmt="int">–</span> score zero</dd>
+        </div>
+        <div class="tile">
+          <dt>Full successes</dt>
+          <dd class="tv" data-bind="headline.successes" data-fmt="int">–</dd>
+          <dd class="ts">episodes, in <span data-bind="headline.tasks_with_success" data-fmt="int">–</span> tasks</dd>
+        </div>
+        <div class="tile">
+          <dt>Policies in the bank</dt>
+          <dd class="tv" data-bind="headline.policies_routed" data-fmt="int">–</dd>
+          <dd class="ts">routed, of <span data-bind="headline.policies_tested" data-fmt="int">–</span> tested</dd>
+        </div>
+      </dl>
+      <p class="load-error" id="loadError" hidden role="alert"></p>
+    </div>
+  </section>
+
+  <!-- 2. Abstract -->
+  <section id="abstract" class="sec">
+    <div class="wrap narrow">
+      <div class="sec-head"><span class="sec-num">01</span><h2>Abstract</h2></div>
+      <p class="abstract">The 2026 BEHAVIOR Challenge asks one system to complete 100 long-horizon household tasks in simulation. Rather than train a single generalist, we assemble a bank of ten public and lightly fine-tuned vision-language-action checkpoints and route each task to one of them. Routing uses only development instances: a hierarchical empirical-Bayes model combines public reference results, policy-level estimates paired against a reference policy, and our ledger of 1,146 development rollouts, and a conservative rule keeps the incumbent policy unless a challenger also beats it on shared instances. The frozen route was evaluated once on the ten public reporting instances of every task. It reaches Q = 0.156 (95% CI 0.144–0.168) over 1,000 episodes, earning partial credit on 71 tasks but full success in only 37 episodes. Development estimates rank tasks well (Spearman 0.68) yet are optimistic by 0.05 on average, and rollout noise (s.d. 0.20 within a task) means telling apart two policies that differ by 0.05 takes about 250 rollouts each. We release the route, all 1,000 metric files, the development ledger, a reimplementation of the selector that reproduces 48 of 50 stage-2 decisions, and a fail-stop serving layer for hidden evaluation.</p>
+    </div>
+  </section>
+
+  <!-- 3. Method -->
+  <section id="method" class="sec">
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-num">02</span><h2>How the route is chosen</h2></div>
+      <p class="lede">Each task is routed to exactly one policy. The choice uses development instances 311–320 only; the ten public reporting instances (301–310) were run once, after the route was frozen.</p>
+      <figure class="fig">
+        <div class="diagram" id="pipeline" role="img" aria-label="Pipeline: ten public checkpoints, development rollouts on instances 311 to 320, an empirical-Bayes posterior per task and policy, strict switching rules, a frozen route hashed with SHA-256, one evaluation on instances 301 to 310, and the hidden test on instances 321 to 340 run by the organizers."></div>
+        <figcaption>Steps 1–5 use development data only. Step 6 ran once on the frozen route. Step 7 is run by the organizers.</figcaption>
+      </figure>
+
+      <div class="cols2">
+        <div>
+          <h3>Prior for tasks 0–49</h3>
+          <p>These tasks have public 2025 reference scores. A policy's prior mean is a <em>transfer factor</em> times its reference score. The factor is estimated from our own development rollouts on other tasks: for example 0.55 ± 0.09 for pt50 and 0.81 for the 2025 winner.</p>
+        </div>
+        <div>
+          <h3>Prior for tasks 50–99</h3>
+          <p>These tasks have no reference. The prior is policy-level: the reference policy's level plus the mean paired difference on shared tasks, shrunk toward the policy's family and widened by a between-task s.d. of 0.1.</p>
+        </div>
+      </div>
+
+      <h3>Switching rules</h3>
+      <p>The incumbent keeps a task unless a challenger clears every rule:</p>
+      <ul class="rules">
+        <li>at least <strong>2</strong> of its own development rollouts on the task;</li>
+        <li>beats the incumbent on at least <strong>2</strong> shared instances;</li>
+        <li>posterior gain of at least <strong>0.01</strong>;</li>
+        <li>no veto;</li>
+        <li>one checkpoint per family.</li>
+      </ul>
+
+      <h3>Two stages</h3>
+      <p>Stage 1 routed <span data-bind="stages.1.tasks" data-fmt="int">–</span> tasks early. The other <span data-bind="stages.2.tasks" data-fmt="int">–</span> were deferred and routed in stage 2 from 860 development rollouts; the stage-2 route was frozen on 2026-10-13 at 12:54 UTC.</p>
+      <p id="repro" class="muted-p"></p>
+    </div>
+  </section>
+
+  <!-- 4. Selector -->
+  <section id="selector" class="sec">
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-num">03</span><h2>Try the selector</h2></div>
+      <p class="lede">A challenger's posterior combines its prior with its own development rollouts by a conjugate Gaussian update. Move the sliders to see when the rules allow a switch.</p>
+      <div class="sel">
+        <form class="sel-controls" id="selForm" onsubmit="return false">
+          <div class="ctl"><label for="s_mu">Prior mean <output id="o_mu"></output></label><input type="range" id="s_mu" min="0" max="0.6" step="0.01" value="0.15"></div>
+          <div class="ctl"><label for="s_sd">Prior s.d. <output id="o_sd"></output></label><input type="range" id="s_sd" min="0.02" max="0.3" step="0.01" value="0.10"></div>
+          <div class="ctl"><label for="s_n">Own dev rollouts <output id="o_n"></output></label><input type="range" id="s_n" min="0" max="10" step="1" value="3"></div>
+          <div class="ctl"><label for="s_x">Their mean q <output id="o_x"></output></label><input type="range" id="s_x" min="0" max="1" step="0.01" value="0.40"></div>
+          <div class="ctl"><label for="s_sig">Rollout noise s.d. <output id="o_sig"></output></label><input type="range" id="s_sig" min="0.05" max="0.45" step="0.01" value="0.20"></div>
+          <div class="ctl"><label for="s_inc">Incumbent posterior mean <output id="o_inc"></output></label><input type="range" id="s_inc" min="0" max="0.6" step="0.01" value="0.18"></div>
+        </form>
+        <div class="sel-out">
+          <div class="sel-stats" id="selStats" aria-live="polite"></div>
+          <div class="chart ch-sel" id="selChart"></div>
+          <div class="legend" id="selLegend"></div>
+          <p class="verdict" id="selVerdict" aria-live="polite"></p>
+          <p class="formula">posterior precision = 1/s.d.<sub>0</sub><sup>2</sup> + n/σ<sup>2</sup><br>posterior mean = (μ<sub>0</sub>/s.d.<sub>0</sub><sup>2</sup> + n·x̄/σ<sup>2</sup>) / precision</p>
+          <p class="note">The real rule also requires the challenger to beat the incumbent on at least two shared instances, which this sketch cannot check.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Bank -->
+  <section id="bank" class="sec">
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-num">04</span><h2>The bank</h2></div>
+      <p class="lede">The <span data-bind="headline.policies_routed" data-fmt="int">–</span> policies that received at least one task, ordered by task points contributed (the sum of their tasks' realized mean q).</p>
+      <figure class="fig">
+        <figcaption class="fig-title">Task points contributed per policy</figcaption>
+        <div class="chart ch-points" id="pointsChart"></div>
+        <figcaption id="pointsCap"></figcaption>
+      </figure>
+      <div class="cards" id="bankCards"></div>
+    </div>
+  </section>
+
+  <!-- 6. Results explorer -->
+  <section id="results" class="sec">
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-num">05</span><h2>Results explorer</h2></div>
+      <p class="lede">All 100 tasks on the public reporting instances 301–310. Bars show realized mean q, coloured by routed policy; a short horizontal tick marks the expected q at freeze.</p>
+      <div class="filters" id="filters">
+        <div class="f-row">
+          <label class="f-search"><span class="sr">Search task name</span><input type="search" id="fSearch" placeholder="Search tasks" autocomplete="off"></label>
+          <div class="seg" role="group" aria-label="Stage">
+            <button type="button" data-stage="all" aria-pressed="true">All stages</button>
+            <button type="button" data-stage="1" aria-pressed="false">Stage 1</button>
+            <button type="button" data-stage="2" aria-pressed="false">Stage 2</button>
+          </div>
+          <label class="f-sel"><span class="lbl">Scene</span><select id="fScene"><option value="all">All scenes</option></select></label>
+          <label class="f-sel"><span class="lbl">Sort</span><select id="fSort">
+            <option value="q">Realized q, high to low</option>
+            <option value="e">Expected q, high to low</option>
+            <option value="gap">Gap (realized − expected), low to high</option>
+            <option value="id">Task id</option>
+          </select></label>
+        </div>
+        <div class="f-row">
+          <span class="lbl">Policy</span>
+          <div class="chips" id="fPolicies" role="group" aria-label="Filter by policy"></div>
+          <button type="button" class="linkbtn" id="fReset">Reset</button>
+        </div>
+      </div>
+      <p class="summary" id="exSummary" aria-live="polite"></p>
+      <figure class="fig">
+        <div class="chart ch-strip" id="stripChart"></div>
+        <div class="legend" id="stripLegend"></div>
+        <figcaption>Hover or tap a bar for its numbers. Click it (or tap it twice) to open the task's row below. Hover a policy chip to highlight its tasks.</figcaption>
+      </figure>
+      <div class="table-wrap">
+        <table class="tasks" id="taskTable">
+          <caption class="sr">Per-task results. Activate a row to show its instruction and development evidence.</caption>
+          <thead><tr>
+            <th scope="col" class="c-id">ID</th>
+            <th scope="col">Task</th>
+            <th scope="col">Policy</th>
+            <th scope="col" class="c-num">Stage</th>
+            <th scope="col" class="c-num">Expected</th>
+            <th scope="col" class="c-num">Realized</th>
+            <th scope="col" class="c-num">Success</th>
+            <th scope="col">Instances 301–310</th>
+          </tr></thead>
+          <tbody id="taskBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Analysis -->
+  <section id="analysis" class="sec">
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-num">06</span><h2>What the numbers say</h2></div>
+      <div class="grid2">
+        <figure class="fig card">
+          <figcaption class="fig-title">Development estimates are optimistic but rank tasks well</figcaption>
+          <div class="chart ch-sq" id="calChart"></div>
+          <div class="legend" id="calLegend"></div>
+          <figcaption id="calCap"></figcaption>
+        </figure>
+        <figure class="fig card">
+          <figcaption class="fig-title">Most episodes earn little or no credit</figcaption>
+          <div class="chart ch-sm" id="histChart"></div>
+          <figcaption id="histCap"></figcaption>
+          <details class="dt"><summary>Show data</summary><div id="histTable"></div></details>
+        </figure>
+        <figure class="fig card">
+          <figcaption class="fig-title">Development rollouts concentrate on one instance</figcaption>
+          <div class="chart ch-sm" id="devChart"></div>
+          <figcaption id="devCap"></figcaption>
+          <details class="dt"><summary>Show data</summary><div id="devTable"></div></details>
+        </figure>
+        <figure class="fig card">
+          <figcaption class="fig-title">Rollouts needed to separate two policies</figcaption>
+          <div class="chart ch-sm" id="powChart"></div>
+          <figcaption id="powCap"></figcaption>
+          <details class="dt"><summary>Show data</summary><div id="powTable"></div></details>
+        </figure>
+      </div>
+      <figure class="fig card stagefig">
+        <figcaption class="fig-title">Stage 1 vs stage 2</figcaption>
+        <div class="chart ch-stage" id="stageChart"></div>
+        <div id="stageTable"></div>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 8. Serving -->
+  <section id="serving" class="sec">
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-num">07</span><h2>Serving for the hidden test</h2></div>
+      <p class="lede">The organizers run the hidden test (instances 321–340) on their own machines. Our serving layer is fail-stop: it answers each query exactly as the published contract specifies, or it stops.</p>
+      <figure class="fig">
+        <div class="diagram" id="servingDiagram" role="img" aria-label="The organizers' evaluator talks to our fail-stop server over a websocket carrying msgpack frames. The server validates the contract, serves one task per container and one session, batches at most 10, uses a global chunk of K = 4 that divides the native replay of 32 or 20, bounds each query at 550 seconds, and calls the routed policy."></div>
+      </figure>
+      <ul class="principles">
+        <li><strong>No retries.</strong> A failed query is not re-sent.</li>
+        <li><strong>No substitute actions.</strong> The server never invents an action the policy did not produce.</li>
+        <li><strong>No fallback checkpoint.</strong> Each task is served by its routed policy only.</li>
+        <li><strong>No automatic restart.</strong> A stopped server stays stopped.</li>
+        <li><strong>Malformed frames or non-finite actions</strong> end the session with close code <code>1011</code>.</li>
+        <li><strong>A second connection</strong> is refused with close code <code>1013</code>.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 9. Disclosures -->
+  <section id="disclosures" class="sec">
+    <div class="wrap narrow">
+      <div class="sec-head"><span class="sec-num">08</span><h2>Disclosures</h2></div>
+      <ol class="disc">
+        <li><strong>Simulator version.</strong> Public results were produced with Isaac Sim 6.0.1, because Isaac Sim 5.1 was incompatible with the cluster's driver. The organizers allowed Isaac 6 for public results; hidden evaluation uses 5.1.</li>
+        <li><strong>What Q = 0.156 is.</strong> It is a self-evaluated score on the public instances. It is not a hidden-test score and not a placement.</li>
+        <li><strong>Duplicate cells.</strong> Two cells completed twice. In both, the first completed attempt was kept regardless of score: <em>spraying for bugs</em>, instance 307 (kept 0.5, excluded 0.0), and <em>cook brussels sprouts</em>, instance 303 (kept 0.0, excluded 0.0).</li>
+        <li><strong>Replay settings.</strong> Of the <span data-bind="headline.episodes" data-fmt="int">–</span> episodes, <span data-bind="replay_counts.32" data-fmt="int">–</span> ran with replay 32 and <span data-bind="replay_counts.20" data-fmt="int">–</span> with replay 20. The other <span data-bind="replay_counts.0" data-fmt="int">–</span> ran with replay 0 (one model query per step) in a recovery pass.</li>
+        <li><strong>Scorer denominator.</strong> The organizer scorer copy used a 20-instance denominator, which gives 0.078; the published contract uses 10. No file was edited.</li>
+        <li><strong>Weights and licences.</strong> Model weights are not redistributed here. Redistribution terms for the Comet-derived and amyjia checkpoints are unresolved.</li>
+        <li><strong>Qualification status.</strong> Synthetic-input GPU startup tests passed on an RTX 3090 for all ten models. No full end-to-end hidden-protocol qualification (Isaac 5.1, 1 FPS, Turing GPU) has been completed.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 10. Credits & citation -->
+  <section id="cite" class="sec">
+    <div class="wrap narrow">
+      <div class="sec-head"><span class="sec-num">09</span><h2>Credits &amp; citation</h2></div>
+      <p>This work stands on public releases and shared compute. We thank Team Comet (openpi-comet); Physical Intelligence (OpenPI, π0 and π0.5); Google (PaliGemma and Gemma); Ilia Larchenko, Gleb Zarin and Akash Karnatak (the 2025 winning solution); ymetz, JackLiu0406 and amyjia1212 for their public checkpoints; the Stanford BEHAVIOR-1K team; and TACC (Stampede3) for compute.</p>
+      <div class="bib">
+        <div class="bib-head"><span class="lbl">BibTeX</span><button type="button" class="btn sm" id="copyBib">Copy</button></div>
+<pre id="bibtex"><code>@techreport{kanr2026policybank,
+  title  = {Policy Bank: Development-Selected Routing of Public Robot Policies for {BEHAVIOR-1K}},
+  author = {Balakrishna, Keshav and Gangerapu, Abhijay and Satarla, Rithik},
+  institution = {Team KANR (Independent)},
+  year   = {2026},
+  note   = {2026 BEHAVIOR Challenge technical report},
+  url    = {https://github.com/FungousLand1941/policy-bank}
+}</code></pre>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <p>Our code is released under Apache-2.0. Model weights belong to their publishers.</p>
+    <p>Team KANR · 2026</p>
+  </div>
+</footer>
+
+<div class="tip" id="tip" role="tooltip" hidden></div>
+</body>
+</html>

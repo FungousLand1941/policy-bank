@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use this code or data, please cite the technical report."
+title: "Policy Bank: Development-Selected Routing of Public Robot Policies for BEHAVIOR-1K"
+type: software
+license: Apache-2.0
+repository-code: "https://github.com/FungousLand1941/policy-bank"
+authors:
+  - given-names: Keshav
+    family-names: Balakrishna
+  - given-names: Abhijay
+    family-names: Gangerapu
+  - given-names: Rithik
+    family-names: Satarla
+date-released: "2026-10-17"
+preferred-citation:
+  type: report
+  title: "Policy Bank: Development-Selected Routing of Public Robot Policies for BEHAVIOR-1K"
+  authors:
+    - given-names: Keshav
+      family-names: Balakrishna
+    - given-names: Abhijay
+      family-names: Gangerapu
+    - given-names: Rithik
+      family-names: Satarla
+  institution:
+    name: "Team KANR (Independent)"
+  year: 2026
+  notes: "2026 BEHAVIOR Challenge technical report"

@@ -15,3 +15,6 @@ paper/*.fls
 paper/*.fdb_latexmk
 paper/*.synctex.gz
 paper/*.toc
+paper/main.pdf
+paper/main.log
+.env*

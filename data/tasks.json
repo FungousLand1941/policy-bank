@@ -354,349 +354,349 @@
   "name": "freeze_fruit",
   "demo_seconds": 421,
   "scene": "house_single_floor",
-  "instruction": ""
+  "instruction": "In the kitchen, take the two tupperware containers from the cabinet, put one apple and one strawberry into each container, place both containers in the refrigerator, and leave the fruit frozen."
  },
  {
   "id": 51,
   "name": "cook_a_brisket",
   "demo_seconds": 244,
   "scene": "house_double_floor_lower",
-  "instruction": ""
+  "instruction": "Take the brisket from the refrigerator, cook it in a frying pan on the burner, and place the cooked brisket on the chopping board."
  },
  {
   "id": 52,
   "name": "sorting_bottles_cans_and_paper",
   "demo_seconds": 342,
   "scene": "house_double_floor_lower",
-  "instruction": ""
+  "instruction": "Sort the recyclables into separate containers: put the bottles together in one bucket, the cans together in another bucket, and the newspaper and magazine together in a third bucket."
  },
  {
   "id": 53,
   "name": "tidying_living_room",
   "demo_seconds": 419,
   "scene": "house_double_floor_upper",
-  "instruction": ""
+  "instruction": "In the living room, place the potted plant on the coffee table and put the books and papers into the bookcase."
  },
  {
   "id": 54,
   "name": "putting_away_toys",
   "demo_seconds": 377,
   "scene": "house_single_floor",
-  "instruction": ""
+  "instruction": "Pick up all the toy figures from the floor and put them inside the toy boxes."
  },
  {
   "id": 55,
   "name": "re_shelving_library_books",
   "demo_seconds": 318,
   "scene": "house_double_floor_upper",
-  "instruction": ""
+  "instruction": "Put the library books and notebooks from the desk into the bookcase."
  },
  {
   "id": 56,
   "name": "make_rose_centerpieces",
   "demo_seconds": 151,
   "scene": "house_double_floor_lower",
-  "instruction": ""
+  "instruction": "Place all four roses into the vase and leave the vase on the coffee table."
  },
  {
   "id": 57,
   "name": "sweeping_garage",
   "demo_seconds": 149,
   "scene": "house_double_floor_lower",
-  "instruction": ""
+  "instruction": "Use the broom to sweep the dirt from the garage floor until the floor is clean."
  },
  {
   "id": 58,
   "name": "stacking_wood",
   "demo_seconds": 531,
   "scene": "house_single_floor",
-  "instruction": ""
+  "instruction": "Stack all of the logs together on the driveway."
  },
  {
   "id": 59,
   "name": "organizing_art_supplies",
   "demo_seconds": 206,
   "scene": "house_double_floor_upper",
-  "instruction": ""
+  "instruction": "Put the marker, paintbrush, glue stick, and rubber eraser into the tote, then place the tote on the desk."
  },
  {
   "id": 60,
   "name": "scrubbing_bathroom_floor",
   "demo_seconds": 105,
   "scene": "house_single_floor",
-  "instruction": ""
+  "instruction": "Use the scrub brush to scrub the bathroom floor until the floor is clean."
  },
  {
   "id": 61,
   "name": "bringing_paper_to_recycling",
   "demo_seconds": 374,
   "scene": "house_double_floor_lower",
-  "instruction": ""
+  "instruction": "Put the paper and newspaper into the recycling bin, then close the recycling bin."
  },
  {
   "id": 62,
   "name": "halve_an_egg",
   "demo_seconds": 213,
   "scene": "house_single_floor",
-  "instruction": ""
+  "instruction": "Take the hard-boiled egg from the refrigerator, cut it in half on the cutting board, and leave the egg halves on the plate."
  },
  {
   "id": 63,
   "name": "installing_smoke_detectors",
   "demo_seconds": 86,
   "scene": "house_double_floor_lower",
-  "instruction": ""
+  "instruction": "Attach the two smoke detectors to the wall nails."
  },
  {
   "id": 64,
   "name": "setting_the_table",
   "demo_seconds": 594,
   "scene": "house_single_floor",
-  "instruction": ""
+  "instruction": "Set the breakfast table with both plates, put one cupcake on each plate, and place a fork and a knife next to each plate."
  },
  {
   "id": 65,
   "name": "unloading_the_car",
   "demo_seconds": 377,
   "scene": "house_double_floor_lower",
-  "instruction": ""
+  "instruction": "Open the car, take out the briefcase and satchel, and place them on the floor outside the car."
  },
  {
   "id": 66,
   "name": "turning_out_all_lights_before_sleep",
   "demo_seconds": 334,
   "scene": "house_single_floor",
-  "instruction": ""
+  "instruction": "Turn off all of the lights and light switches before sleep."
  },
  {
   "id": 67,
   "name": "boxing_food_after_dinner",
   "demo_seconds": 223,
   "scene": "house_single_floor",
-  "instruction": ""
+  "instruction": "Pack the food from the plates into the tupperware container, put the container in the refrigerator, and close the refrigerator."
  },
  {
   "id": 68,
   "name": "cleaning_up_branches_and_twigs",
   "demo_seconds": 418,
   "scene": "house_double_floor_lower",
-  "instruction": ""
+  "instruction": "Collect all of the branches and twigs from the garden and put them into the recycling bin."
  },
  {
   "id": 69,
   "name": "vacuuming_floors",
   "demo_seconds": 80,
   "scene": "house_double_floor_upper",
-  "instruction": ""
+  "instruction": "Use the vacuum to clean the dirty floor until the floor is no longer covered in dirt."
  },
  {
   "id": 70,
   "name": "thawing_frozen_food",
   "demo_seconds": 274,
   "scene": "house_double_floor_lower",
-  "instruction": ""
+  "instruction": "Take the frozen food from the refrigerator, put it in the microwave, and heat it until it is thawed."
  },
  {
   "id": 71,
   "name": "clean_your_rusty_garden_tools",
   "demo_seconds": 505,
   "scene": "house_single_floor",
-  "instruction": ""
+  "instruction": "Use the steel wool to clean the rust off the garden tools, then put the tools into the toolbox."
  },
  {
   "id": 72,
   "name": "cook_a_frozen_pie",
   "demo_seconds": 289,
   "scene": "restaurant_diner",
-  "instruction": ""
+  "instruction": "Take the frozen apple pie from the refrigerator, put it in the oven, and heat it until it is hot and no longer frozen."
  },
  {
   "id": 73,
   "name": "organizing_school_stuff",
   "demo_seconds": 486,
   "scene": "house_single_floor",
-  "instruction": ""
+  "instruction": "Put the school supplies into the tote, place the tote on the bed, and keep the folder and notebook next to it."
  },
  {
   "id": 74,
   "name": "carrying_out_garden_furniture",
   "demo_seconds": 369,
   "scene": "house_single_floor",
-  "instruction": ""
+  "instruction": "Carry the garden chairs and wheelbarrow out to the lawn."
  },
  {
   "id": 75,
   "name": "put_together_a_basic_pruning_kit",
   "demo_seconds": 375,
   "scene": "house_double_floor_lower",
-  "instruction": ""
+  "instruction": "Put the pruner and shears into the toolbox, then close the toolbox."
  },
  {
   "id": 76,
   "name": "dispose_of_glass",
   "demo_seconds": 307,
   "scene": "hotel_suite_large",
-  "instruction": ""
+  "instruction": "Pick up the water glasses and put them into the trash can."
  },
  {
   "id": 77,
   "name": "installing_a_modem",
   "demo_seconds": 80,
   "scene": "Rs_int",
-  "instruction": ""
+  "instruction": "Install the modem by placing it on the cabinet and turning it on."
  },
  {
   "id": 78,
   "name": "make_cabinet_doors",
   "demo_seconds": 115,
   "scene": "Rs_int",
-  "instruction": ""
+  "instruction": "Attach the cabinet door to the cabinet base."
  },
  {
   "id": 79,
   "name": "polishing_shoes",
   "demo_seconds": 358,
   "scene": "hotel_suite_large",
-  "instruction": ""
+  "instruction": "Use the scrub brush to polish both shoes until the stains are removed."
  },
  {
   "id": 80,
   "name": "clean_up_broken_glass",
   "demo_seconds": 290,
   "scene": "restaurant_diner",
-  "instruction": ""
+  "instruction": "Pick up all of the broken glass pieces and put them into the trash can."
  },
  {
   "id": 81,
   "name": "packing_meal_for_delivery",
   "demo_seconds": 295,
   "scene": "restaurant_diner",
-  "instruction": ""
+  "instruction": "Pack each wrapped hamburger into a paper bag, then put the paper bags into the storage box."
  },
  {
   "id": 82,
   "name": "store_batteries",
   "demo_seconds": 257,
   "scene": "Rs_int",
-  "instruction": ""
+  "instruction": "Put all of the batteries into the bottom-cabinet drawer, then close the drawer."
  },
  {
   "id": 83,
   "name": "store_honey",
   "demo_seconds": 226,
   "scene": "Rs_int",
-  "instruction": ""
+  "instruction": "Put the jar of honey into the cabinet drawer, then close the drawer."
  },
  {
   "id": 84,
   "name": "tidying_bathroom",
   "demo_seconds": 433,
   "scene": "hotel_suite_large",
-  "instruction": ""
+  "instruction": "Tidy the bathroom by putting the toilet tissue on the toilet, placing the tissue dispenser and soap dish on the countertop, putting the soap in the soap dish, and throwing the cork into the trash can."
  },
  {
   "id": 85,
   "name": "putting_dirty_dishes_in_sink",
   "demo_seconds": 405,
   "scene": "restaurant_diner",
-  "instruction": ""
+  "instruction": "Put all of the dirty bowls and plates into the kitchen sink."
  },
  {
   "id": 86,
   "name": "make_gift_bags_for_baby_showers",
   "demo_seconds": 322,
   "scene": "Rs_int",
-  "instruction": ""
+  "instruction": "Make baby-shower gift bags by putting a toy die and a wafer into each paper bag."
  },
  {
   "id": 87,
   "name": "collecting_aluminum_cans",
   "demo_seconds": 340,
   "scene": "hotel_suite_large",
-  "instruction": ""
+  "instruction": "Collect all of the soda cans and put them into the ice bucket."
  },
  {
   "id": 88,
   "name": "rearrange_your_room",
   "demo_seconds": 428,
   "scene": "hotel_suite_large",
-  "instruction": ""
+  "instruction": "Rearrange the room by putting the pillows on the bed, moving the chair next to the desk, and placing the tissue dispenser on the nightstand."
  },
  {
   "id": 89,
   "name": "installing_a_fax_machine",
   "demo_seconds": 136,
   "scene": "office_cubicles_right",
-  "instruction": ""
+  "instruction": "Install the fax machine by placing it on the cubicle desk and turning it on."
  },
  {
   "id": 90,
   "name": "composting_waste",
   "demo_seconds": 121,
   "scene": "Rs_int",
-  "instruction": ""
+  "instruction": "Put the food waste into the compost bin."
  },
  {
   "id": 91,
   "name": "store_produce",
   "demo_seconds": 317,
   "scene": "restaurant_diner",
-  "instruction": ""
+  "instruction": "Take the mangoes and pomegranates from the basket and put them into the refrigerator."
  },
  {
   "id": 92,
   "name": "installing_a_scanner",
   "demo_seconds": 142,
   "scene": "office_cubicles_right",
-  "instruction": ""
+  "instruction": "Install the scanner by turning it on and leaving it on the desk near the laptop."
  },
  {
   "id": 93,
   "name": "clean_a_keyboard",
   "demo_seconds": 129,
   "scene": "office_cubicles_right",
-  "instruction": ""
+  "instruction": "Use the pipe cleaner to clean the keyboard until the stain is removed."
  },
  {
   "id": 94,
   "name": "dispose_of_batteries",
   "demo_seconds": 481,
   "scene": "office_cubicles_right",
-  "instruction": ""
+  "instruction": "Pick up all of the batteries and put them into the trash can."
  },
  {
   "id": 95,
   "name": "cook_brussels_sprouts",
   "demo_seconds": 522,
   "scene": "restaurant_diner",
-  "instruction": ""
+  "instruction": "Take the brussels sprouts from the refrigerator, cut them on the cutting board, put the pieces onto the baking sheet, and cook them in the oven."
  },
  {
   "id": 96,
   "name": "cook_broccolini",
   "demo_seconds": 154,
   "scene": "restaurant_diner",
-  "instruction": ""
+  "instruction": "Cook the broccolini in the frying pan on the stove."
  },
  {
   "id": 97,
   "name": "setup_a_bar_for_a_cocktail_party",
   "demo_seconds": 447,
   "scene": "restaurant_diner",
-  "instruction": ""
+  "instruction": "Set up the bar for a cocktail party by placing the wineglasses, wine bottle, corkscrew, soda cans, and ice bucket on the bar."
  },
  {
   "id": 98,
   "name": "laying_tile_floors",
   "demo_seconds": 478,
   "scene": "office_cubicles_right",
-  "instruction": ""
+  "instruction": "Lay the ceramic tiles on the floor next to each other."
  },
  {
   "id": 99,
   "name": "sorting_books_on_shelf",
   "demo_seconds": 258,
   "scene": "house_double_floor_upper",
-  "instruction": ""
+  "instruction": "Sort the comic books, notebooks, and hardbacks on the bookcase shelves so the books of each type are grouped together."
  }
 ]
