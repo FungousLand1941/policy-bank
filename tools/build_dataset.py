@@ -108,7 +108,7 @@ POLICIES = {
         "license_status": "Apache-2.0 declared by the publisher at this revision.",
     },
     "w100@b_amy_t90": {
-        "family": "winner100", "display": "amyjia specialist (t90)", "kind": "public",
+        "family": "winner100", "display": "amyjia 5-task specialist", "kind": "public",
         "source": "amyjia1212/b1k-2026-t90-91-93-96-97", "revision": "7519e44670b9c589ed8fe3ce65a5a17583ae9cff",
         "subfolder": "step_099999", "replay": 20,
         "lineage": "Winner-format specialist published for tasks 90, 91, 93, 96 and 97.",

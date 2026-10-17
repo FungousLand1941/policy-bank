@@ -1,0 +1,25 @@
+{
+  "task": "make_cabinet_doors",
+  "instance_id": 307,
+  "rollout_id": 0,
+  "steps": 5164,
+  "success": false,
+  "agent_distance": {
+    "base": 6.155642757839654,
+    "left": 21.208138488189434,
+    "right": 19.46565369135351
+  },
+  "normalized_agent_distance": {
+    "base": 0.7255781687967058,
+    "left": 0.2692739866433953,
+    "right": 0.21969465129751015
+  },
+  "q_score": {
+    "final": 0.0
+  },
+  "time": {
+    "simulator_steps": 5164,
+    "simulator_time": 172.13333333333333,
+    "normalized_time": 0.6666392331525949
+  }
+}

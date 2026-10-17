@@ -24,6 +24,12 @@ def disp(name: str) -> str:
     return tex(name).replace("π0.5", r"$\pi_{0.5}$")
 
 
+def signed(x: float, digits: int = 2) -> str:
+    """A signed number with a typographic minus for LaTeX."""
+    s = f"{x:+.{digits}f}"
+    return "$-$" + s[1:] if s.startswith("-") else s
+
+
 def num(x: int) -> str:
     return f"{x:,}".replace(",", "{,}")
 
@@ -86,6 +92,15 @@ def main():
         "ReplayZero": str(s["replay_counts"]["0"]), "DemoSpearman": f"{s['demo_length_spearman']:.2f}",
         "DepthZeroTasks": str(br["by_depth"]["0"]["tasks"]), "DepthOneTasks": str(br["by_depth"]["1"]["tasks"]),
         "DepthTwoTasks": str(br["by_depth"]["2+"]["tasks"]),
+        "DepthZeroAbs": f"{abs(br['by_depth']['0']['gap_points']):.1f}",
+        "DepthOneAbs": f"{abs(br['by_depth']['1']['gap_points']):.1f}",
+        "DepthTwoAbs": f"{abs(br['by_depth']['2+']['gap_points']):.1f}",
+        "DevAtFreeze": str(br["eligible_at_freeze"]),
+        "WithinSDthree": f"{s['within_task_sd']:.3f}",
+        "SimTemplate": str(s["simulation"]["template_rollouts"]),
+        "ZeroC": f"{s['simulation']['zero_c']:.1f}",
+        "ZeroShareOff": f"{100 * s['simulation']['zero_share_official']:.0f}",
+        "ZeroShareDev": f"{100 * s['simulation']['zero_share_dev']:.0f}",
         "DepthZeroGap": f"{br['by_depth']['0']['gap_points']:+.1f}",
         "DepthOneGap": f"{br['by_depth']['1']['gap_points']:+.1f}",
         "DepthTwoGap": f"{br['by_depth']['2+']['gap_points']:+.1f}",
@@ -142,11 +157,11 @@ def main():
 
     label = {"0": "0", "1": "1", "2+": "2 or more"}
     (OUT / "depth.tex").write_text("\n".join(
-        f"{label[k]} & {v['tasks']} & {v['expected']:.3f} & {v['realized']:.3f} & {v['gap_points']:+.2f} \\\\"
+        f"{label[k]} & {v['tasks']} & {v['expected']:.3f} & {v['realized']:.3f} & {signed(v['gap_points'])} \\\\"
         for k, v in br["by_depth"].items()) + "\n", encoding="utf-8")
     (OUT / "stagesplit.tex").write_text("\n".join(
         f"{k.replace('stage', 'Stage', 1).replace('0-49', '0--49').replace('50-99', '50--99')} & {v['tasks']} & {v['expected']:.3f} & {v['realized']:.3f} & "
-        f"{v['gap_points']:+.2f} \\\\" for k, v in br["by_stage"].items()) + "\n", encoding="utf-8")
+        f"{signed(v['gap_points'])} \\\\" for k, v in br["by_stage"].items()) + "\n", encoding="utf-8")
 
     order = ["reference only", "best dev mean", "best posterior", "strict rules (ours)", "oracle"]
     names = {"reference only": "Reference policy only", "best dev mean": "Highest raw development mean",
@@ -156,8 +171,8 @@ def main():
     for k in order:
         v = sim[k]
         claim = "--" if v["claimed"] is None else f"{v['claimed']:.3f}"
-        opt = "--" if v["optimism"] is None else f"{v['optimism']:+.3f}"
-        raw = "--" if k in ("reference only", "oracle") else f"{v['raw_dev_gap']:+.3f}"
+        opt = "--" if v["optimism"] is None else signed(v["optimism"], 3)
+        raw = "--" if k in ("reference only", "oracle") else signed(v["raw_dev_gap"], 3)
         simrows.append(f"{names[k]} & {v['true']:.3f} & {v['true_p05']:.3f}--{v['true_p95']:.3f} & {claim} & "
                        f"{opt} & {raw} & {v['regret']:.3f} \\\\")
     (OUT / "simulation.tex").write_text("\n".join(simrows) + "\n", encoding="utf-8")

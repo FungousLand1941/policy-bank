@@ -1,0 +1,25 @@
+{
+  "task": "make_microwave_popcorn",
+  "instance_id": 309,
+  "rollout_id": 0,
+  "steps": 4857,
+  "success": false,
+  "agent_distance": {
+    "base": 6.130961041147664,
+    "left": 9.073851753154202,
+    "right": 13.98283323435345
+  },
+  "normalized_agent_distance": {
+    "base": 1.403238406223758,
+    "left": 0.3114774273248995,
+    "right": 0.6213690640787898
+  },
+  "q_score": {
+    "final": 0.0
+  },
+  "time": {
+    "simulator_steps": 4857,
+    "simulator_time": 161.9,
+    "normalized_time": 0.6666203417747582
+  }
+}

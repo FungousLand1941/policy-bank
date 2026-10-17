@@ -240,7 +240,7 @@ def decide(task_id: int, fallback: str, priors: Mapping[str, Gaussian], dev: Seq
             if guarded and rules.dev_guard:
                 if len(shared) < rules.min_shared:
                     c.flags.append(f"dev guard: {len(shared)} shared instance(s) with the fallback")
-                else:
+                elif shared:
                     a = sum(sum(mine[i]) / len(mine[i]) for i in shared) / len(shared)
                     b = sum(sum(fb_inst[i]) / len(fb_inst[i]) for i in shared) / len(shared)
                     if a <= b:
@@ -250,7 +250,7 @@ def decide(task_id: int, fallback: str, priors: Mapping[str, Gaussian], dev: Seq
                 if hot and all(max(mine[i]) == 0 for i in hot):
                     c.flags.append("veto: zero wherever the fallback scored")
         cands.append(c)
-    cands.sort(key=lambda c: -c.posterior.mean)
+    cands.sort(key=lambda c: (-c.posterior.mean, c.policy))   # ties broken by name, not insertion order
     fb = next(c for c in cands if c.policy == fallback)
     best = next((c for c in cands if c.policy != fallback and c.eligible), None)
     if best is not None and best.posterior.mean - fb.posterior.mean >= rules.switch_margin:
@@ -275,7 +275,7 @@ def one_per_family(decisions: Sequence[Decision], family: Mapping[str, str]) -> 
     gain: dict[str, float] = defaultdict(float)
     for d in decisions:
         gain[d.choice] += max(0.0, d.expected() - d.expected(d.fallback))
-    chosen = {d.choice for d in decisions}
+    chosen = sorted({d.choice for d in decisions})
     keep: dict[str, str] = {}
     by_fam: dict[str, list[str]] = defaultdict(list)
     for p in chosen:
@@ -299,7 +299,9 @@ def select_by_level(tasks: Sequence[int], dev: Sequence[Episode], reference: str
     The highest eligible posterior wins (``guarded=False``).  Then, while some family has more
     than one member in the route, every possible keeper of that family is tried: all its siblings
     are removed, every task is re-decided, and the keeper whose route has the highest total
-    expected score wins.  The reference policy is never removed.
+    expected score wins.  The reference policy is never removed.  Families are resolved one at a
+    time (greedily); with several crowded families the result is not guaranteed to be jointly
+    optimal.
     """
     family = dict(family or {})
     scores = per_task_scores(dev)
@@ -336,7 +338,7 @@ def select_by_level(tasks: Sequence[int], dev: Sequence[Episode], reference: str
             return decisions
         members = crowded[0]
         best = None
-        for keeper in sorted(members & chosen):
+        for keeper in sorted(members):          # a sibling that won nowhere may still be the best keeper
             trial = allowed - (members - {keeper})
             ds = decide_all(trial)
             value = sum(d.expected() for d in ds)

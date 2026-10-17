@@ -57,6 +57,8 @@ def fmt(v, f: str) -> str:
         return to_fixed(v * 100, 1) + "%"
     if f == "sp1":
         return ("+" if v >= 0 else MINUS) + to_fixed(abs(v), 1)
+    if f == "sp2":
+        return ("+" if v >= 0 else MINUS) + to_fixed(abs(v), 2)
     if f == "x100f1":
         return to_fixed(v * 100, 1)
     if f == "ord":
@@ -67,7 +69,14 @@ def fmt(v, f: str) -> str:
     if f == "utc":
         m = re.match(r"^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})", str(v))
         return f"{m.group(1)} at {m.group(2)} UTC" if m else str(v)
+    if f == "utcday":
+        m = re.match(r"^\d{4}-(\d{2})-(\d{2})T(\d{2}:\d{2})", str(v))
+        return f"{m.group(3)} UTC on {int(m.group(2))} {MONTHS[int(m.group(1)) - 1]}" if m else str(v)
     return js_str(v)
+
+
+MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September",
+          "October", "November", "December"]
 
 
 def resolve(o, path: str):
@@ -109,6 +118,7 @@ def humanize(name: str) -> str:
 
 FAMVAR = {"comet": "comet", "winner": "winner", "winner100": "w100"}
 FAMILY = {"comet": "comet", "winner": "winner", "winner100": "winner-format specialist"}
+REFERENCE = "s150997"  # the weak reference policy, incumbent on tasks 50-99
 STEPS = {2: [1, 0], 4: [2, 0, 3, 1]}
 # Light-mode hexes of the CSS ramps, for the PNG images only.
 LIGHT_HEX = {
@@ -177,18 +187,20 @@ def disagree_text(D) -> str:
     dis = R.get("disagreements") or []
     if not dis:
         return ""
-    tasks = {t["id"]: t for t in D["tasks"]}
     pol = {p["policy"]: p["display"] for p in D["policies"]}
-    items = []
+    parts = []
     for d in dis:
-        t = tasks.get(d["task_id"])
-        name = humanize(t["name"]).lower() if t else ""
-        items.append(
-            f'task {d["task_id"]} ({name}), where it prefers {pol.get(d["ours"], d["ours"])}, '
-            f'posterior {fmt(d["posterior_ours"], "f3")}, and the frozen route chose '
-            f'{pol.get(d["frozen"], d["frozen"])}, posterior {fmt(d["posterior_frozen"], "f3")}'
-        )
-    return E("It disagrees on " + "; and on ".join(items) + ".")
+        a, b = fmt(d["posterior_ours"], "f3"), fmt(d["posterior_frozen"], "f3")
+        diff = abs(d["posterior_ours"] - d["posterior_frozen"])
+        if diff < 0.01:
+            parts.append(f'task {d["task_id"]} is a near tie ({a} vs {b})')
+        else:
+            who = "the reference" if d["ours"] == REFERENCE else pol.get(d["ours"], d["ours"])
+            parts.append(f'on task {d["task_id"]} the reimplementation prefers {who} by {fmt(diff, "f2")} ({a} vs {b})')
+    words = {1: "one", 2: "two", 3: "three", 4: "four", 5: "five"}
+    n = len(parts)
+    text = f"In the one disagreement, {parts[0]}." if n == 1 else f"Of the {words.get(n, n)} disagreements, {'; '.join(parts)}."
+    return E(text)
 
 
 def teaser_svg(D, color) -> str:

@@ -11,7 +11,9 @@ calibrated to our own data:
 Each simulated "world" draws a true score for every (task, candidate) pair from the selector's
 own posterior on the real development ledger.  Development rollouts are then re-drawn with the
 same cells and counts as the real ledger (optionally replicated), each episode score drawn from
-``Beta(theta * kappa, (1 - theta) * kappa)``, where ``kappa`` is fitted to the within-task spread
+a zero-inflated Beta: with probability ``(1 - theta) ** c`` the score is exactly 0 (most
+failed episodes satisfy no goal condition), otherwise it is Beta with the mean that keeps the
+overall mean at ``theta``; ``c`` and the Beta concentration are fitted to the within-task spread
 of the reported episodes.  Every rule then picks a route from the simulated rollouts, and we
 record the true score of what it picked and the score it claimed.
 
@@ -54,6 +56,66 @@ def fit_beta_concentration(episodes: Sequence[Episode]) -> float:
     if den <= 0:
         raise ValueError("no within-task variation to fit")
     return max(0.05, num / den - 1)
+
+
+@dataclass(frozen=True)
+class BetaOutcome:
+    """Episode scores ``Beta(theta * kappa, (1 - theta) * kappa)``: never exactly zero."""
+
+    kappa: float
+
+    def draw(self, theta: float, rng: random.Random) -> float:
+        return rng.betavariate(*_ab(theta, self.kappa))
+
+
+@dataclass(frozen=True)
+class ZeroInflatedOutcome:
+    """Exactly 0 with probability ``(1 - theta) ** c``, else Beta with mean ``theta / (1 - pi0)``.
+
+    Real episode scores are 0 far more often than a Beta allows (636 of the 1,000 reported
+    episodes), and the selector's veto rule only reacts to exact zeros, so the simulation needs
+    them too.
+    """
+
+    c: float
+    kappa: float
+
+    def draw(self, theta: float, rng: random.Random) -> float:
+        theta = min(0.995, max(0.0, theta))
+        pi0 = (1.0 - theta) ** self.c
+        m = theta / (1.0 - pi0) if pi0 < 1.0 else 0.0
+        if m > 0.98:                    # keep the nonzero part a proper Beta; adjust the zero mass
+            m, pi0 = 0.98, 1.0 - theta / 0.98
+        if m <= 0.0 or rng.random() < pi0:
+            return 0.0
+        return rng.betavariate(*_ab(m, self.kappa))
+
+
+def fit_zero_inflated(episodes: Sequence[Episode]) -> ZeroInflatedOutcome:
+    """Fit ``c`` by least squares on per-task zero fractions and ``kappa`` on the nonzero scores."""
+    by_task: dict[int, list[float]] = defaultdict(list)
+    for e in episodes:
+        by_task[e.task_id].append(e.q)
+    pairs = [(sum(v) / len(v), sum(q == 0 for q in v) / len(v)) for v in by_task.values()]
+    pairs = [(m, z) for m, z in pairs if 0 < m < 1]
+    if not pairs:
+        raise ValueError("need tasks with mean strictly between 0 and 1")
+    grid = [0.5 + 0.05 * i for i in range(400)]
+    c = min(grid, key=lambda c: sum((z - (1 - m) ** c) ** 2 for m, z in pairs))
+    num = den = 0.0
+    for v in by_task.values():
+        nz = [q for q in v if q > 0]
+        if len(nz) < 2:
+            continue
+        m = sum(nz) / len(nz)
+        num += m * (1 - m)
+        den += sum((q - m) ** 2 for q in nz) / (len(nz) - 1)
+    kappa = max(0.05, num / den - 1) if den > 0 else 2.0
+    return ZeroInflatedOutcome(c, kappa)
+
+
+def _outcome(model) -> BetaOutcome | ZeroInflatedOutcome:
+    return BetaOutcome(float(model)) if isinstance(model, (int, float)) else model
 
 
 @dataclass
@@ -99,11 +161,13 @@ def draw_world(truth: dict, rng: random.Random) -> dict[tuple[int, str], float]:
     return {k: min(1.0, max(0.0, rng.gauss(m, s))) for k, (m, s) in truth.items()}
 
 
-def draw_ledger(setup: Setup, world: dict, kappa: float, rng: random.Random, replicate: int = 1) -> list[Episode]:
+def draw_ledger(setup: Setup, world: dict, kappa, rng: random.Random, replicate: int = 1) -> list[Episode]:
+    """Redraw the template's rollouts in a world; ``kappa`` is a Beta concentration or an outcome model."""
+    model = _outcome(kappa)
     out = []
     for k in range(replicate):
         for e in setup.template:
-            q = rng.betavariate(*_ab(world[(e.task_id, e.policy)], kappa))
+            q = model.draw(world[(e.task_id, e.policy)], rng)
             out.append(Episode(task_id=e.task_id, task=e.task, instance=e.instance + 100 * k,
                                policy=e.policy, q=q, success=q >= 0.999))
     return out
@@ -158,12 +222,13 @@ def _ab(theta: float, kappa: float) -> tuple[float, float]:
     return th * kappa, (1 - th) * kappa
 
 
-def run_study(setup: Setup, dev: Sequence[Episode], kappa: float, sims: int = 200, seed: int = 0,
+def run_study(setup: Setup, dev: Sequence[Episode], kappa, sims: int = 200, seed: int = 0,
               replicate: int = 1, rules: dict[str, Rule] | None = None,
               report_instances: int = 10) -> dict[str, dict]:
     """Return, per rule, the mean true Q (over the setup's tasks), claimed Q and optimism, with
     5th/95th percentiles of the true Q across simulated worlds."""
     rules = rules or RULES
+    model = _outcome(kappa)
     truth = posterior_truth(setup, dev)
     rng = random.Random(seed)
     acc: dict[str, dict[str, list[float]]] = {
@@ -181,7 +246,7 @@ def run_study(setup: Setup, dev: Sequence[Episode], kappa: float, sims: int = 20
             acc[name]["true"].append(true_q)
             acc[name]["regret"].append(best - true_q)
             # One simulated reporting run: ``report_instances`` fresh episodes per task.
-            rep = [sum(rng.betavariate(*_ab(world[(t, p)], kappa)) for _ in range(report_instances))
+            rep = [sum(model.draw(world[(t, p)], rng) for _ in range(report_instances))
                    / report_instances for t, p in pick.items()]
             acc[name]["reported"].append(mean(rep))
             acc[name]["claimed"].append(mean(claim.values()) if claim else float("nan"))

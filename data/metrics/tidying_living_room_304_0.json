@@ -1,0 +1,25 @@
+{
+  "task": "tidying_living_room",
+  "instance_id": 304,
+  "rollout_id": 0,
+  "steps": 18849,
+  "success": false,
+  "agent_distance": {
+    "base": 8.991386586274414,
+    "left": 58.17429120286397,
+    "right": 68.27573589171516
+  },
+  "normalized_agent_distance": {
+    "base": 2.2970205765068488,
+    "left": 0.3175199837946737,
+    "right": 0.2718535327021245
+  },
+  "q_score": {
+    "final": 0.0
+  },
+  "time": {
+    "simulator_steps": 18849,
+    "simulator_time": 628.3,
+    "normalized_time": 0.666660300281182
+  }
+}

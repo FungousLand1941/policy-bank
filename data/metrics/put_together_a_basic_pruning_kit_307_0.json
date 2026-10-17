@@ -1,0 +1,25 @@
+{
+  "task": "put_together_a_basic_pruning_kit",
+  "instance_id": 307,
+  "rollout_id": 0,
+  "steps": 16897,
+  "success": false,
+  "agent_distance": {
+    "base": 21.555570666981566,
+    "left": 62.04205862159142,
+    "right": 61.58089283044319
+  },
+  "normalized_agent_distance": {
+    "base": 0.9020545222578786,
+    "left": 0.2912637072573089,
+    "right": 0.30344964389282164
+  },
+  "q_score": {
+    "final": 0.0
+  },
+  "time": {
+    "simulator_steps": 16897,
+    "simulator_time": 563.2333333333333,
+    "normalized_time": 0.6666553234301947
+  }
+}

@@ -68,6 +68,7 @@ class FakeUpstream:
 
     def __init__(self, horizon=50, dim=23, fail_after=None):
         self.horizon, self.dim, self.fail_after, self.calls = horizon, dim, fail_after, 0
+        self.resets = 0
         self.seen = []
         self.ready = threading.Event()
         self.thread = threading.Thread(target=lambda: asyncio.run(self._main()), daemon=True)
@@ -80,6 +81,9 @@ class FakeUpstream:
             async for msg in ws:
                 obs = unpack(msg)
                 self.seen.append(obs)
+                if obs.get("reset") is True:
+                    self.resets += 1
+                    continue
                 self.calls += 1
                 if self.fail_after is not None and self.calls > self.fail_after:
                     await ws.send("Traceback: boom")
@@ -133,3 +137,23 @@ def test_remote_upstream_error_is_terminal_through_the_server():
             with pytest.raises(websockets.ConnectionClosedError):
                 c.infer(np.full(61, 3.0, np.float32), task_id=2)  # forces a re-plan -> upstream error
         assert r.server.failed.is_set() and "upstream policy error" in r.server.failure
+
+
+def test_reset_is_forwarded_only_when_enabled():
+    import time
+
+    from policybank.serving.remote import OpenPIRemotePolicy
+    obs = {"robot_r1::proprio": np.zeros(61, np.float32), "task_id": np.array([3])}
+    up = FakeUpstream(horizon=32)
+    with up as uri:
+        quiet = OpenPIRemotePolicy(uri, horizon=32)
+        quiet.reset()
+        time.sleep(0.2)
+        assert up.resets == 0                  # default: nothing is sent upstream
+        loud = OpenPIRemotePolicy(uri, horizon=32, forward_reset=True)
+        loud.reset()
+        plan = loud.plan(obs, 1)               # the reset frame got no reply; the next plan still works
+        assert plan.shape == (1, 32, 23)
+        assert up.resets == 1
+        quiet.close()
+        loud.close()

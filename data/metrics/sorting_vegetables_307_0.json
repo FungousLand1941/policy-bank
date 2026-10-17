@@ -1,0 +1,25 @@
+{
+  "task": "sorting_vegetables",
+  "instance_id": 307,
+  "rollout_id": 0,
+  "steps": 17856,
+  "success": false,
+  "agent_distance": {
+    "base": 14.302137826602213,
+    "left": 76.95965926756571,
+    "right": 41.26772897862496
+  },
+  "normalized_agent_distance": {
+    "base": 2.3740996214456627,
+    "left": 0.601615189576508,
+    "right": 0.5543774897777836
+  },
+  "q_score": {
+    "final": 0.6153846153846154
+  },
+  "time": {
+    "simulator_steps": 17856,
+    "simulator_time": 595.2,
+    "normalized_time": 0.6666498655913979
+  }
+}

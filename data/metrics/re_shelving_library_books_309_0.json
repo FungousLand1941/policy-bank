@@ -1,0 +1,25 @@
+{
+  "task": "re_shelving_library_books",
+  "instance_id": 309,
+  "rollout_id": 0,
+  "steps": 14293,
+  "success": false,
+  "agent_distance": {
+    "base": 11.819078355881274,
+    "left": 50.485352903158855,
+    "right": 56.61926968115404
+  },
+  "normalized_agent_distance": {
+    "base": 1.6603832726292764,
+    "left": 0.37524943197563826,
+    "right": 0.2925081883476254
+  },
+  "q_score": {
+    "final": 0.3333333333333333
+  },
+  "time": {
+    "simulator_steps": 14293,
+    "simulator_time": 476.43333333333334,
+    "normalized_time": 0.6666501084446932
+  }
+}

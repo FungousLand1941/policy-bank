@@ -1,0 +1,25 @@
+{
+  "task": "bringing_paper_to_recycling",
+  "instance_id": 303,
+  "rollout_id": 0,
+  "steps": 16822,
+  "success": false,
+  "agent_distance": {
+    "base": 41.445992551866226,
+    "left": 82.5233573925143,
+    "right": 80.76842349036451
+  },
+  "normalized_agent_distance": {
+    "base": 0.8503500056343337,
+    "left": 0.2856573065474714,
+    "right": 0.3103081491121338
+  },
+  "q_score": {
+    "final": 0.0
+  },
+  "time": {
+    "simulator_steps": 16822,
+    "simulator_time": 560.7333333333333,
+    "normalized_time": 0.666642491974795
+  }
+}

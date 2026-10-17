@@ -1,0 +1,25 @@
+{
+  "task": "freeze_fruit",
+  "instance_id": 301,
+  "rollout_id": 0,
+  "steps": 18929,
+  "success": false,
+  "agent_distance": {
+    "base": 49.59928933857285,
+    "left": 95.86507062350938,
+    "right": 91.017455128841
+  },
+  "normalized_agent_distance": {
+    "base": 0.5121081438609753,
+    "left": 0.2988335565151569,
+    "right": 0.42455482792064375
+  },
+  "q_score": {
+    "final": 0.0
+  },
+  "time": {
+    "simulator_steps": 18929,
+    "simulator_time": 630.9666666666667,
+    "normalized_time": 0.6666374346241217
+  }
+}

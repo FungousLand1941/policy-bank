@@ -1,0 +1,25 @@
+{
+  "task": "preparing_lunch_box",
+  "instance_id": 307,
+  "rollout_id": 0,
+  "steps": 12368,
+  "success": false,
+  "agent_distance": {
+    "base": 18.74254238310955,
+    "left": 30.13362206184101,
+    "right": 38.91952344759977
+  },
+  "normalized_agent_distance": {
+    "base": 1.1416807582776762,
+    "left": 0.4675375555944455,
+    "right": 0.442973049842501
+  },
+  "q_score": {
+    "final": 0.6666666666666666
+  },
+  "time": {
+    "simulator_steps": 12368,
+    "simulator_time": 412.26666666666665,
+    "normalized_time": 0.6666639715394566
+  }
+}

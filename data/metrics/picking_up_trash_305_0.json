@@ -1,0 +1,25 @@
+{
+  "task": "picking_up_trash",
+  "instance_id": 305,
+  "rollout_id": 0,
+  "steps": 7902,
+  "success": false,
+  "agent_distance": {
+    "base": 9.420236385867867,
+    "left": 25.63577108913387,
+    "right": 29.38599445342038
+  },
+  "normalized_agent_distance": {
+    "base": 1.7194579134234476,
+    "left": 0.41180739066884375,
+    "right": 0.3131253568629525
+  },
+  "q_score": {
+    "final": 0.0
+  },
+  "time": {
+    "simulator_steps": 7902,
+    "simulator_time": 263.4,
+    "normalized_time": 0.6666350291065553
+  }
+}

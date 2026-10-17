@@ -1,0 +1,25 @@
+{
+  "task": "collecting_aluminum_cans",
+  "instance_id": 309,
+  "rollout_id": 0,
+  "steps": 15305,
+  "success": false,
+  "agent_distance": {
+    "base": 25.50403747464651,
+    "left": 65.82264103795023,
+    "right": 69.23546423489461
+  },
+  "normalized_agent_distance": {
+    "base": 0.7259164365016526,
+    "left": 0.32375334176751563,
+    "right": 0.2937425237881191
+  },
+  "q_score": {
+    "final": 0.8333333333333334
+  },
+  "time": {
+    "simulator_steps": 15305,
+    "simulator_time": 510.1666666666667,
+    "normalized_time": 0.6666367200261353
+  }
+}

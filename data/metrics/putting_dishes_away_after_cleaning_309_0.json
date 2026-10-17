@@ -1,0 +1,25 @@
+{
+  "task": "putting_dishes_away_after_cleaning",
+  "instance_id": 309,
+  "rollout_id": 0,
+  "steps": 16431,
+  "success": false,
+  "agent_distance": {
+    "base": 8.000905457491527,
+    "left": 49.95174674784448,
+    "right": 51.17618582154137
+  },
+  "normalized_agent_distance": {
+    "base": 4.13061998739847,
+    "left": 0.567407585225697,
+    "right": 0.6158040012965316
+  },
+  "q_score": {
+    "final": 0.0
+  },
+  "time": {
+    "simulator_steps": 16431,
+    "simulator_time": 547.7,
+    "normalized_time": 0.6666319761426572
+  }
+}

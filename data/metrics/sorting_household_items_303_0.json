@@ -1,0 +1,25 @@
+{
+  "task": "sorting_household_items",
+  "instance_id": 303,
+  "rollout_id": 0,
+  "steps": 23712,
+  "success": false,
+  "agent_distance": {
+    "base": 7.9974661606934205,
+    "left": 76.93952222953521,
+    "right": 67.1994031020613
+  },
+  "normalized_agent_distance": {
+    "base": 6.365291078091436,
+    "left": 0.3293885803500797,
+    "right": 0.420215042046018
+  },
+  "q_score": {
+    "final": 0.0
+  },
+  "time": {
+    "simulator_steps": 23712,
+    "simulator_time": 790.4,
+    "normalized_time": 0.666656334345479
+  }
+}

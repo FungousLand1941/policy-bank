@@ -1,0 +1,25 @@
+{
+  "task": "installing_a_scanner",
+  "instance_id": 302,
+  "rollout_id": 0,
+  "steps": 6388,
+  "success": false,
+  "agent_distance": {
+    "base": 5.187960152696405,
+    "left": 22.585890472115352,
+    "right": 23.567888081484853
+  },
+  "normalized_agent_distance": {
+    "base": 1.2363047924850428,
+    "left": 0.3128413293566384,
+    "right": 0.3347223973877165
+  },
+  "q_score": {
+    "final": 0.0
+  },
+  "time": {
+    "simulator_steps": 6388,
+    "simulator_time": 212.93333333333334,
+    "normalized_time": 0.6666460551033186
+  }
+}

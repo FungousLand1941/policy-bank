@@ -1,0 +1,25 @@
+{
+  "task": "sorting_books_on_shelf",
+  "instance_id": 303,
+  "rollout_id": 0,
+  "steps": 11610,
+  "success": false,
+  "agent_distance": {
+    "base": 29.35895999063412,
+    "left": 49.32207216358438,
+    "right": 48.437069267962215
+  },
+  "normalized_agent_distance": {
+    "base": 0.3484728342987543,
+    "left": 0.20821915117310155,
+    "right": 0.2857769928940697
+  },
+  "q_score": {
+    "final": 0.0
+  },
+  "time": {
+    "simulator_steps": 11610,
+    "simulator_time": 387.0,
+    "normalized_time": 0.6666106804478897
+  }
+}

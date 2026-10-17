@@ -1,0 +1,25 @@
+{
+  "task": "wash_a_baseball_cap",
+  "instance_id": 308,
+  "rollout_id": 0,
+  "steps": 12525,
+  "success": false,
+  "agent_distance": {
+    "base": 12.6579534527992,
+    "left": 37.117394795023756,
+    "right": 29.943578532654783
+  },
+  "normalized_agent_distance": {
+    "base": 2.2860093543479576,
+    "left": 0.2886086175809997,
+    "right": 0.3836648978835815
+  },
+  "q_score": {
+    "final": 0.0
+  },
+  "time": {
+    "simulator_steps": 12525,
+    "simulator_time": 417.5,
+    "normalized_time": 0.6666195608782435
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "task": "cook_cabbage",
+  "instance_id": 309,
+  "rollout_id": 0,
+  "steps": 21218,
+  "success": false,
+  "agent_distance": {
+    "base": 31.896960959350046,
+    "left": 89.70875931964474,
+    "right": 101.61314766591931
+  },
+  "normalized_agent_distance": {
+    "base": 1.2325406188414854,
+    "left": 0.23269188157670606,
+    "right": 0.22492266527499294
+  },
+  "q_score": {
+    "final": 0.0
+  },
+  "time": {
+    "simulator_steps": 21218,
+    "simulator_time": 707.2666666666667,
+    "normalized_time": 0.6666420020737109
+  }
+}

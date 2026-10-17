@@ -20,8 +20,8 @@ def _encode(obj):
     if isinstance(obj, np.ndarray):
         if obj.dtype.kind not in _KINDS:
             raise TypeError(f"unsupported array dtype {obj.dtype}")
-        a = np.ascontiguousarray(obj)
-        return {b"__ndarray__": True, b"data": a.tobytes(), b"dtype": a.dtype.str, b"shape": list(a.shape)}
+        a = obj if obj.flags.c_contiguous else np.ascontiguousarray(obj)   # keeps 0-d arrays 0-d
+        return {b"__ndarray__": True, b"data": a.tobytes(), b"dtype": a.dtype.str, b"shape": list(obj.shape)}
     if isinstance(obj, np.generic):
         if obj.dtype.kind not in _KINDS:
             raise TypeError(f"unsupported scalar dtype {obj.dtype}")
@@ -41,6 +41,9 @@ def _decode(obj):
     # OpenPI writes byte-string keys; accept text keys from other clients too.
     if "__ndarray__" in obj or "__npgeneric__" in obj:
         obj = {k.encode() if isinstance(k, str) else k: v for k, v in obj.items()}
+    for marker, fields in ((b"__ndarray__", (b"data", b"dtype", b"shape")), (b"__npgeneric__", (b"data", b"dtype"))):
+        if marker in obj and any(f not in obj for f in fields):
+            raise ValueError(f"{marker.decode()} map is missing a field")
     if b"__ndarray__" in obj:
         if obj[b"__ndarray__"] is not True:
             raise ValueError("invalid ndarray marker")
@@ -63,7 +66,11 @@ def _decode(obj):
         data = obj[b"data"]
         if isinstance(data, (list, tuple, dict, bytes)):
             raise ValueError("scalar marker carries a non-scalar payload")
-        value = dtype.type(data)
+        try:
+            with np.errstate(all="raise"):
+                value = dtype.type(data)
+        except (OverflowError, TypeError, ValueError, FloatingPointError) as e:
+            raise ValueError(f"scalar payload does not fit {dtype}: {e}") from None
         if np.ndim(value) != 0:
             raise ValueError("scalar marker decoded to an array")
         return value

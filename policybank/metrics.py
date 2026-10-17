@@ -64,12 +64,14 @@ def bootstrap_q(episodes: Sequence[Episode], n_boot: int = 10_000, seed: int = 0
     each resampled task mean from the observed one is scaled by ``sqrt(k / (k - 1))``, undoing
     the plain bootstrap's ``(k - 1) / k`` variance shrinkage for ``k`` instances.
     """
+    if n_boot < 1:
+        raise ValueError("n_boot must be at least 1")
     by_task: dict[int, list[float]] = defaultdict(list)
     for e in episodes:
         by_task[e.task_id].append(e.q)
     tasks = []
     for t in range(n_tasks):
-        qs = by_task.get(t, [])
+        qs = sorted(by_task.get(t, []))    # a multiset: independent of row order and instance labels
         tasks.append(qs + [0.0] * max(0, n_instances - len(qs)))
     point = challenge_q(episodes, n_tasks, n_instances)
     rng = random.Random(seed)

@@ -1,0 +1,25 @@
+{
+  "task": "packing_meal_for_delivery",
+  "instance_id": 305,
+  "rollout_id": 0,
+  "steps": 13290,
+  "success": false,
+  "agent_distance": {
+    "base": 52.937546871390424,
+    "left": 81.26946508204855,
+    "right": 85.82495333655243
+  },
+  "normalized_agent_distance": {
+    "base": 0.37052151373112574,
+    "left": 0.26666226950209093,
+    "right": 0.1925360790491958
+  },
+  "q_score": {
+    "final": 0.0
+  },
+  "time": {
+    "simulator_steps": 13290,
+    "simulator_time": 443.0,
+    "normalized_time": 0.6666587659894658
+  }
+}

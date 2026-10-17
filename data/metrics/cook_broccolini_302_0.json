@@ -1,0 +1,25 @@
+{
+  "task": "cook_broccolini",
+  "instance_id": 302,
+  "rollout_id": 0,
+  "steps": 6927,
+  "success": false,
+  "agent_distance": {
+    "base": 19.9495393153965,
+    "left": 33.51152328861872,
+    "right": 35.10042223664959
+  },
+  "normalized_agent_distance": {
+    "base": 0.5447444087900738,
+    "left": 0.17641394421505802,
+    "right": 0.17986108421818825
+  },
+  "q_score": {
+    "final": 0.0
+  },
+  "time": {
+    "simulator_steps": 6927,
+    "simulator_time": 230.9,
+    "normalized_time": 0.666632019633319
+  }
+}

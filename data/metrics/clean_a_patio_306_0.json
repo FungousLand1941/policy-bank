@@ -1,0 +1,25 @@
+{
+  "task": "clean_a_patio",
+  "instance_id": 306,
+  "rollout_id": 0,
+  "steps": 18107,
+  "success": false,
+  "agent_distance": {
+    "base": 17.596611984285687,
+    "left": 56.09796841072239,
+    "right": 57.79903914793613
+  },
+  "normalized_agent_distance": {
+    "base": 2.114662756286862,
+    "left": 0.20913056804669633,
+    "right": 0.19471257941148426
+  },
+  "q_score": {
+    "final": 0.0
+  },
+  "time": {
+    "simulator_steps": 18107,
+    "simulator_time": 603.5666666666666,
+    "normalized_time": 0.666637764400508
+  }
+}

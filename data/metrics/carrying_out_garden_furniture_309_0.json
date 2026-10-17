@@ -1,0 +1,25 @@
+{
+  "task": "carrying_out_garden_furniture",
+  "instance_id": 309,
+  "rollout_id": 0,
+  "steps": 16589,
+  "success": false,
+  "agent_distance": {
+    "base": 29.136173112434484,
+    "left": 70.05577388559323,
+    "right": 70.80404618515786
+  },
+  "normalized_agent_distance": {
+    "base": 2.0992461763585886,
+    "left": 0.163593939005174,
+    "right": 0.19455526544311555
+  },
+  "q_score": {
+    "final": 0.0
+  },
+  "time": {
+    "simulator_steps": 16589,
+    "simulator_time": 552.9666666666667,
+    "normalized_time": 0.6666348182530593
+  }
+}

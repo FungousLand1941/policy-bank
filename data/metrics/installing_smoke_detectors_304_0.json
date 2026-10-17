@@ -1,0 +1,25 @@
+{
+  "task": "installing_smoke_detectors",
+  "instance_id": 304,
+  "rollout_id": 0,
+  "steps": 3854,
+  "success": false,
+  "agent_distance": {
+    "base": 12.900581664123422,
+    "left": 19.869990093255183,
+    "right": 24.66627702794358
+  },
+  "normalized_agent_distance": {
+    "base": 0.6672644865261516,
+    "left": 0.3417314235252143,
+    "right": 0.1316412686163166
+  },
+  "q_score": {
+    "final": 0.0
+  },
+  "time": {
+    "simulator_steps": 3854,
+    "simulator_time": 128.46666666666667,
+    "normalized_time": 0.6665204981837053
+  }
+}

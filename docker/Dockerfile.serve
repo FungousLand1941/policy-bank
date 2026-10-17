@@ -1,0 +1,45 @@
+# Fail-stop policy server (policybank.serving) in a minimal, non-root image.
+#
+# Build from the repository root:
+#   docker build -f docker/Dockerfile.serve -t policybank-serve .
+#
+# Without --upstream the container serves the deterministic ScriptedPolicy (smoke tests).
+# With --upstream ws://... it fronts an OpenPI-compatible checkpoint server running elsewhere.
+# One task per container; the process exits nonzero on a terminal failure and is never restarted
+# by this image. See docker/README.md.
+FROM python:3.12.7-slim-bookworm
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_ROOT_USER_ACTION=ignore
+
+# tini is PID 1: it forwards SIGTERM/SIGINT to the server and passes its exit code through.
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends tini \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN groupadd --system --gid 65532 policybank \
+ && useradd --system --uid 65532 --gid 65532 --no-create-home --home-dir /nonexistent \
+            --shell /usr/sbin/nologin policybank
+
+# Only what the package build needs; data/, site/, paper/ and results/ stay out of the image.
+WORKDIR /tmp/policybank-src
+COPY pyproject.toml README.md LICENSE ./
+COPY policybank/ ./policybank/
+RUN pip install --no-cache-dir ".[serve]" \
+ && cd / \
+ && rm -rf /tmp/policybank-src
+
+WORKDIR /srv
+USER 65532:65532
+
+EXPOSE 8000
+
+# /healthz answers 200 while serving and 503 after a terminal failure (then the process exits).
+HEALTHCHECK --interval=10s --timeout=3s --start-period=10s --retries=3 \
+  CMD ["python", "-c", "import sys, urllib.request; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=2).status == 200 else 1)"]
+
+ENTRYPOINT ["tini", "--", "python", "-m", "policybank", "serve", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["--replay", "32", "--chunk", "4"]

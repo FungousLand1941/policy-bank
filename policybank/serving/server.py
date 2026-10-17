@@ -43,6 +43,10 @@ class QueryTimeout(TimeoutError):
     pass
 
 
+class PolicyFault(RuntimeError):
+    """Any exception raised on the inference side (model, adapter, upstream server or contract)."""
+
+
 class PolicyServer:
     def __init__(self, policy: Policy, spec: ContractSpec | None = None, *, query_timeout_s: float = 550.0,
                  task_id: int | None = None):
@@ -109,7 +113,21 @@ class PolicyServer:
         return contract.reply(np.ascontiguousarray(action), chunk_out, q)
 
     async def _run(self, fn, *args):
-        return await asyncio.get_running_loop().run_in_executor(self._pool, fn, *args)
+        """Run ``fn`` on the inference thread.  Its exceptions become :class:`PolicyFault`, so a
+        ``ConnectionClosed`` from an upstream policy server is never mistaken for the evaluator
+        hanging up."""
+        try:
+            return await asyncio.get_running_loop().run_in_executor(self._pool, fn, *args)
+        except ContractError:
+            raise
+        except Exception as e:  # noqa: BLE001
+            raise PolicyFault(f"{type(e).__name__}: {e}") from e
+
+    async def _bounded(self, coro, what: str):
+        try:
+            return await asyncio.wait_for(coro, self.query_timeout_s)
+        except asyncio.TimeoutError:
+            raise QueryTimeout(f"{what} exceeded {self.query_timeout_s:g} s") from None
 
     async def _query(self, ws, contract: SessionContract, payload: bytes, start: float) -> None:
         out = await self._run(self._act, contract, payload)
@@ -130,14 +148,10 @@ class PolicyServer:
         conn = uuid.uuid4().hex[:8]
         contract = SessionContract(self.spec, self.binding)
         try:
-            await self._run(self.executor.reset)                   # nothing carries over between sessions
-            await asyncio.wait_for(ws.send(pack(self.metadata())), self.query_timeout_s)
+            await self._bounded(self._run(self.executor.reset), "session reset")   # nothing carries over
+            await self._bounded(ws.send(pack(self.metadata())), "metadata send")
             async for payload in ws:
-                try:
-                    await asyncio.wait_for(self._query(ws, contract, payload, time.monotonic()),
-                                           self.query_timeout_s)
-                except asyncio.TimeoutError:
-                    raise QueryTimeout(f"query exceeded {self.query_timeout_s:g} s") from None
+                await self._bounded(self._query(ws, contract, payload, time.monotonic()), "query")
         except websockets.ConnectionClosed as e:
             # The evaluator went away (cleanly or not).  Not a policy fault: end the session.
             LOG.warning("session %s closed by peer (%s)", conn, e)

@@ -1,0 +1,25 @@
+{
+  "task": "putting_dirty_dishes_in_sink",
+  "instance_id": 301,
+  "rollout_id": 0,
+  "steps": 18223,
+  "success": false,
+  "agent_distance": {
+    "base": 73.36031162590685,
+    "left": 111.13306613514578,
+    "right": 111.72322336552315
+  },
+  "normalized_agent_distance": {
+    "base": 0.7823712676232857,
+    "left": 0.16214166158330626,
+    "right": 0.22959058311519823
+  },
+  "q_score": {
+    "final": 0.5
+  },
+  "time": {
+    "simulator_steps": 18223,
+    "simulator_time": 607.4333333333333,
+    "normalized_time": 0.6666619107721012
+  }
+}

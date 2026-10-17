@@ -1,0 +1,25 @@
+{
+  "task": "storing_food",
+  "instance_id": 304,
+  "rollout_id": 0,
+  "steps": 29804,
+  "success": false,
+  "agent_distance": {
+    "base": 34.77835430714802,
+    "left": 109.93932263747593,
+    "right": 115.65304602977994
+  },
+  "normalized_agent_distance": {
+    "base": 1.5998715611613654,
+    "left": 0.2791230586456206,
+    "right": 0.23794098767544894
+  },
+  "q_score": {
+    "final": 0.75
+  },
+  "time": {
+    "simulator_steps": 29804,
+    "simulator_time": 993.4666666666667,
+    "normalized_time": 0.6666595087907663
+  }
+}

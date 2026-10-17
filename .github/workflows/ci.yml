@@ -26,6 +26,7 @@ jobs:
           python -m policybank score --boot 2000
           python -m policybank route --images
           python -m policybank select
+          python -m policybank verify data/metrics --check-hashes
 
   paper-numbers:
     runs-on: ubuntu-latest

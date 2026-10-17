@@ -201,16 +201,19 @@ def _stage2_setup(freeze_utc: str = FREEZE_UTC):
 
 def simulation_study(sims: int = 300, curve_sims: int = 120, seed: int = 0):
     """Posterior-predictive study of the selection rules on tasks 50-99 (see policybank.simulate)."""
-    from .simulate import fit_beta_concentration, run_study
+    from .simulate import fit_zero_inflated, run_study
     dev, setup = _stage2_setup()
     official = D.load_official()
-    kappa = fit_beta_concentration(official)
-    main = run_study(setup, dev, kappa, sims=sims, seed=seed)
-    curve = {}
-    for m in (1, 2, 4, 8):
-        r = run_study(setup, dev, kappa, sims=curve_sims, seed=seed + m, replicate=m)
+    model = fit_zero_inflated(official)
+    main = run_study(setup, dev, model, sims=sims, seed=seed)
+    keep = ("strict rules (ours)", "best dev mean", "oracle")
+    curve = {1: {k: {"true": main[k]["true"], "true_p05": main[k]["true_p05"], "true_p95": main[k]["true_p95"]}
+                 for k in keep}}                      # the x1 point is the main run itself
+    for m in (2, 4, 8):
+        r = run_study(setup, dev, model, sims=curve_sims, seed=seed + m, replicate=m)
         curve[m] = {k: {"true": v["true"], "true_p05": v["true_p05"], "true_p95": v["true_p95"]}
-                    for k, v in r.items() if k in ("strict rules (ours)", "best dev mean", "oracle")}
+                    for k, v in r.items() if k in keep}
+    zeros_dev = sum(e.q == 0 for e in dev) / len(dev)
     # Observed counterparts on the same tasks.
     route = {t["task_id"]: t for t in D.load_route()["tasks"]}
     off = defaultdict(list)
@@ -236,8 +239,9 @@ def simulation_study(sims: int = 300, curve_sims: int = 120, seed: int = 0):
     for v in main.values():
         v.pop("reported")
     observed["raw_dev_gap"] = observed["raw_dev_mean_routed"] - observed["realized_on_those"]
-    return {"kappa": kappa, "sims": sims, "rules": main, "curve": curve, "observed": observed,
-            "template_rollouts": len(setup.template)}
+    return {"kappa": model.kappa, "zero_c": model.c, "sims": sims, "rules": main, "curve": curve,
+            "observed": observed, "template_rollouts": len(setup.template),
+            "zero_share_official": sum(e.q == 0 for e in official) / len(official), "zero_share_dev": zeros_dev}
 
 
 STAGE1_START_UTC = "2026-10-11T03:00:00Z"   # stage-1 reported runs began (first finish 03:04 UTC)
@@ -307,6 +311,7 @@ def calibration_breakdown():
         "dev_single_policy": single,
         "routed_with_zero_own_stage1": sum(1 for t in route if route[t]["stage"] == 1 and len(own[t]) == 0),
         "own_dev_n": {t: len(own[t]) for t in sorted(route)},
+        "eligible_at_freeze": sum(1 for e in dev if finished[(e.run, e.task_id, e.instance, e.policy)] <= FREEZE_UTC),
     }
 
 

@@ -43,8 +43,9 @@ def cmd_select(a):
     print(f"stage-2 tasks 50-99: reimplementation agrees with the frozen route on "
           f"{r['agree']}/{r['tasks']} tasks using {r['dev_rollouts_used']} dev rollouts")
     for d in r["disagreements"]:
-        print(f"  task {d['task_id']}: ours {d['ours']} ({d['posterior_ours']:.3f}) vs frozen "
-              f"{d['frozen']} ({d['posterior_frozen']:.3f})")
+        fmt = lambda x: "-" if x is None else f"{x:.3f}"  # noqa: E731
+        print(f"  task {d['task_id']}: ours {d['ours']} ({fmt(d['posterior_ours'])}) vs frozen "
+              f"{d['frozen']} ({fmt(d['posterior_frozen'])})")
 
 
 def cmd_analyze(a):
@@ -99,7 +100,7 @@ def cmd_serve(a):
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     if a.upstream:
         from .serving.remote import OpenPIRemotePolicy
-        policy = OpenPIRemotePolicy(a.upstream, name=a.policy, horizon=a.replay)
+        policy = OpenPIRemotePolicy(a.upstream, name=a.policy, horizon=a.replay, forward_reset=a.forward_reset)
     else:
         policy = ScriptedPolicy(name=a.policy, horizon=a.replay)
     server = PolicyServer(policy, ContractSpec(chunk=a.chunk), query_timeout_s=a.query_timeout)
@@ -137,6 +138,8 @@ def main(argv=None):
     s.set_defaults(fn=cmd_simulate)
     s = sub.add_parser("serve", help="run the fail-stop server in front of a scripted or upstream policy")
     s.add_argument("--upstream", help="ws:// URI of an OpenPI-compatible policy server (default: scripted)")
+    s.add_argument("--forward-reset", action="store_true",
+                   help="forward {reset: True} to the upstream server (for stateful native BEHAVIOR servers)")
     s.add_argument("--policy", default="scripted")
     s.add_argument("--replay", type=int, default=32)
     s.add_argument("--chunk", type=int, default=4)

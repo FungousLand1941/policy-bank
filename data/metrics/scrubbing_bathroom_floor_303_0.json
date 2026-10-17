@@ -1,0 +1,25 @@
+{
+  "task": "scrubbing_bathroom_floor",
+  "instance_id": 303,
+  "rollout_id": 0,
+  "steps": 4731,
+  "success": false,
+  "agent_distance": {
+    "base": 0.5872177697668803,
+    "left": 17.007334111171076,
+    "right": 18.92777917933563
+  },
+  "normalized_agent_distance": {
+    "base": 9.168319279808776,
+    "left": 0.4585551121076316,
+    "right": 0.41418488274413456
+  },
+  "q_score": {
+    "final": 0.0
+  },
+  "time": {
+    "simulator_steps": 4731,
+    "simulator_time": 157.7,
+    "normalized_time": 0.6666307334601564
+  }
+}

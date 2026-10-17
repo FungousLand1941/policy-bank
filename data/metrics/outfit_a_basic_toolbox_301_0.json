@@ -1,0 +1,25 @@
+{
+  "task": "outfit_a_basic_toolbox",
+  "instance_id": 301,
+  "rollout_id": 0,
+  "steps": 15957,
+  "success": false,
+  "agent_distance": {
+    "base": 28.512803749113978,
+    "left": 39.12086683432267,
+    "right": 55.43061335463267
+  },
+  "normalized_agent_distance": {
+    "base": 1.1111744842344564,
+    "left": 0.46461393805449147,
+    "right": 0.3620057362818798
+  },
+  "q_score": {
+    "final": 0.14285714285714285
+  },
+  "time": {
+    "simulator_steps": 15957,
+    "simulator_time": 531.9,
+    "normalized_time": 0.6666647866140252
+  }
+}

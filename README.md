@@ -19,17 +19,17 @@ The challenge asks one system to complete 100 long-horizon household tasks in si
 training one generalist, we route each task to one of ten vision-language-action checkpoints. Nine
 are public and one is our own continued training. Every routing decision uses development instances
 (311–320) only. An empirical-Bayes model combines public reference scores, policy levels estimated
-against a reference policy, and 800 eligible development rollouts. Conservative switching rules then
-guard each decision.
+against a reference policy, and our eligible development rollouts (800 in total, 724 available when
+the main route froze). Conservative switching rules then guard each change of policy.
 
 | | |
 |---|---|
-| Challenge score Q (public instances 301–310, Isaac Sim 6.0.1) | **0.156** (95% CI 0.144–0.168) |
+| Challenge score Q (public instances 301–310, Isaac Sim 6.0.1) | **0.156** (95% CI 0.143–0.168) |
 | Episodes | 1,000 (100 tasks × 10 instances, scored from each cell's first completed run) |
 | Tasks with any credit / full successes | 71 tasks / 37 episodes in 15 tasks |
 | Expected vs realized | Spearman 0.68 across tasks; mean 0.206 → 0.156 |
 | Where the optimism sits | +1.5 and +4.1 task points where the routed policy had 0 or 1 own dev rollouts; −0.6 with ≥ 2 |
-| Simulation (tasks 50–99) | posterior claims self-consistent (+0.003); raw-mean selection overclaims by 0.12; an oracle adds only 0.044 |
+| Simulation (tasks 50–99, within the model) | raw-mean selection delivers less (0.182 vs 0.186) and overclaims by 0.12; posterior claims stay honest (+0.002); an oracle adds only 0.043 |
 | Selector reimplementation vs frozen stage-2 route | 48 / 50 tasks, including all 8 non-default picks |
 
 Q is a self-evaluated score on public instances, not a hidden-test result. See
@@ -40,8 +40,8 @@ Q is a self-evaluated score on public instances, not a hidden-test result. See
 ```bash
 git clone https://github.com/FungousLand1941/policy-bank && cd policy-bank
 pip install -e ".[dev]"             # numpy, msgpack, websockets, pytest, ruff
-python -m pytest -q                 # 84 tests, ~10 s
-python -m policybank score          # Q = 0.156054 (95% CI 0.1438-0.1682)
+python -m pytest -q                 # 125 tests, ~40 s
+python -m policybank score          # Q = 0.156054 (95% CI 0.1434-0.1685)
 python -m policybank route --images # one serving image per policy and its tasks
 python -m policybank select         # re-run the stage-2 selection against the frozen route
 python -m policybank simulate       # posterior-predictive study of the selection rules
@@ -51,10 +51,11 @@ python -m policybank analyze --out results/summary.json
 The dataset lives in `data/`. Run from a clone, or point the code elsewhere with `--data DIR` (before
 the subcommand) or the `POLICYBANK_DATA` environment variable.
 
-To audit a folder of raw evaluator metric files (format, coverage, and SHA-256 against the release):
+All 1,000 reported evaluator metric files are in `data/metrics/`, byte for byte. To audit them, or
+any folder of raw evaluator files (format, coverage, and SHA-256 against the release):
 
 ```bash
-python -m policybank verify path/to/metrics --check-hashes
+python -m policybank verify data/metrics --check-hashes
 ```
 
 ## Repository
@@ -63,7 +64,7 @@ python -m policybank verify path/to/metrics --check-hashes
 policybank/            Python package
   metrics.py           challenge Q, rescaled bootstrap CI, rollout noise, power for testing and for selection
   selection.py         priors, conjugate updates, switching rules, exact one-checkpoint-per-family search
-  simulate.py          posterior-predictive simulation of selection rules (Beta outcome model)
+  simulate.py          posterior-predictive simulation of selection rules (zero-inflated Beta outcomes)
   routing.py           frozen route: validation, canonical SHA-256, image map
   provenance.py        metrics-file audit, coverage, score-blind duplicate resolution, directory verification
   analysis.py          every number in the paper
@@ -74,7 +75,7 @@ results/summary.json   output of `policybank analyze`
 paper/                 LaTeX source, generated numbers/tables/figures, compiled PDF
 site/                  static project page (deployed on Vercel)
 tools/                 dataset build, figures, tables, site export and prerender
-tests/                 84 tests
+tests/                 125 tests (unit, property, serving, CLI subprocess)
 ```
 
 To regenerate the paper's numbers, figures and website data from `data/`:
@@ -104,8 +105,9 @@ Development rollouts update the prior conjugately (`update`). The switching rule
 - **Tasks 0–49:** a challenger replaces the incumbent only if it has ≥ 2 of its own rollouts, beats
   the incumbent on ≥ 2 shared development instances, gains ≥ 0.01, and is not vetoed.
 - **Tasks 50–99:** the highest eligible posterior wins if it gains ≥ 0.01, subject to the veto. A
-  specialist is a candidate only on the tasks it has rollouts for. When members of one checkpoint
-  family win different tasks, every possible keeper is tried and the best whole route is kept.
+  specialist is a candidate only on the tasks it has rollouts for. When two steps of one training
+  run (the ymetz steps 6000 and 9999) win different tasks, every step is tried as the keeper and the
+  best whole route is kept.
 
 The paper's Algorithm 1 and Table 2 list every hyperparameter.
 
@@ -118,7 +120,8 @@ The paper's Algorithm 1 and Table 2 list every hyperparameter.
   chunked stream equals the native one.
 - **Fail-stop.** Malformed input, nonfinite actions, model exceptions and timeouts are terminal (close
   code 1011). There is no retry, no substitute action and no fallback checkpoint.
-- **Disconnects.** A peer disconnect is not a policy failure: its session simply ends.
+- **Disconnects.** An evaluator disconnect is not a policy failure: its session simply ends. A
+  failing or disconnecting *upstream* policy server is a policy failure.
 - **Hung models.** Inference runs on a dedicated thread, and the CLI hard-exits after a failure, so a
   hung model cannot keep the container alive.
 
@@ -128,7 +131,12 @@ Put the contract in front of a real checkpoint served by any OpenPI-compatible p
 python -m policybank serve --upstream ws://localhost:8001 --policy pt50 --replay 32 --chunk 4 --port 8000
 ```
 
-Without `--upstream`, the server runs a deterministic scripted stand-in, for protocol tests.
+Add `--forward-reset` when the upstream is a native BEHAVIOR server that keeps per-episode state
+and accepts `{"reset": True}`; otherwise restart the upstream per session. Without `--upstream`, the
+server runs a deterministic scripted stand-in, for protocol tests.
+
+A non-root container image for the server lives in [`docker/`](docker/); CI builds it and runs a
+10-check smoke test of the full contract against it (`.github/workflows/serve-smoke.yml`).
 
 ## Disclosures
 

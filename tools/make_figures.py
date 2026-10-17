@@ -56,7 +56,7 @@ def fig_tasks(s):
     handles = [Patch(color=FAMILY[k], label=v) for k, v in FAMILY_LABEL.items()]
     handles.append(Line2D([], [], color=INK, marker="_", linestyle="none", markersize=7, label="expected at freeze"))
     ax.legend(handles=handles, loc="upper center", ncol=4, fontsize=7, bbox_to_anchor=(0.5, 1.16))
-    fig.savefig(OUT / "tasks.pdf")
+    fig.savefig(OUT / "tasks.pdf", metadata={"CreationDate": None})
     plt.close(fig)
 
 
@@ -93,7 +93,7 @@ def fig_calibration(s):
                        markeredgecolor=INK2, label="stage 1 (hollow)")]
     ax.legend(handles=handles, loc="upper center", fontsize=6.3, ncol=2, title="routed policy's own dev rollouts",
               title_fontsize=6.3, bbox_to_anchor=(0.5, -0.2))
-    fig.savefig(OUT / "calibration.pdf")
+    fig.savefig(OUT / "calibration.pdf", metadata={"CreationDate": None})
     plt.close(fig)
 
 
@@ -151,12 +151,12 @@ def fig_simulation(s):
     ax.set_title("Value of more development rollouts", loc="left")
     ax.legend(loc="lower right", fontsize=6.3)
     fig.tight_layout(w_pad=2.0)
-    fig.savefig(OUT / "simulation.pdf")
+    fig.savefig(OUT / "simulation.pdf", metadata={"CreationDate": None})
     plt.close(fig)
 
 
 def fig_noise(s):
-    fig, axes = plt.subplots(1, 3, figsize=(7.0, 1.95))
+    fig, axes = plt.subplots(1, 3, figsize=(7.0, 2.2))
     ax = axes[0]
     h = s["q_histogram_deciles"]
     ax.bar([i / 10 + 0.05 for i in range(10)], h, width=0.075, color=BLUE, linewidth=0)
@@ -192,14 +192,15 @@ def fig_noise(s):
     for x_, y_ in zip(xs, [pw[k] for k in pw], strict=True):
         ax.annotate(f"{y_:,}", (x_, y_), textcoords="offset points", xytext=(4, 3), fontsize=6.3, color=INK2)
     for x_, y_ in zip(xs2, [sel[k] for k in sel], strict=True):
-        ax.annotate(f"{y_:,}", (x_, y_), textcoords="offset points", xytext=(4, -9), fontsize=6.3, color=INK2)
+        ax.annotate(f"{y_:,}", (x_, y_), textcoords="offset points", xytext=(4, 3), fontsize=6.3, color=INK2)
     ax.set_xlabel("True difference in task score")
     ax.set_ylabel("Rollouts per policy (log)")
     ax.set_title(f"80% power / 80% correct, s.d. {s['within_task_sd']:.2f}", loc="left")
     ax.set_xlim(0, 0.23)
-    ax.legend(loc="upper right", fontsize=6.3)
+    ax.set_ylim(1, 5000)
+    ax.legend(loc="upper center", fontsize=6.3, ncol=2, bbox_to_anchor=(0.5, -0.3))
     fig.tight_layout(w_pad=1.6)
-    fig.savefig(OUT / "noise.pdf")
+    fig.savefig(OUT / "noise.pdf", metadata={"CreationDate": None})
     plt.close(fig)
 
 

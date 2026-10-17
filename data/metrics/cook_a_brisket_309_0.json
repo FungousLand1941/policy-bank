@@ -1,0 +1,25 @@
+{
+  "task": "cook_a_brisket",
+  "instance_id": 309,
+  "rollout_id": 0,
+  "steps": 11003,
+  "success": false,
+  "agent_distance": {
+    "base": 18.04411264685975,
+    "left": 48.12791548142559,
+    "right": 47.751654347765
+  },
+  "normalized_agent_distance": {
+    "base": 0.7871376264363883,
+    "left": 0.24874752792109475,
+    "right": 0.34584979778345576
+  },
+  "q_score": {
+    "final": 0.0
+  },
+  "time": {
+    "simulator_steps": 11003,
+    "simulator_time": 366.76666666666665,
+    "normalized_time": 0.6666359174770518
+  }
+}

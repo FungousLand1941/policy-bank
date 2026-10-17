@@ -1,0 +1,25 @@
+{
+  "task": "make_rose_centerpieces",
+  "instance_id": 305,
+  "rollout_id": 0,
+  "steps": 6799,
+  "success": false,
+  "agent_distance": {
+    "base": 11.121668816843965,
+    "left": 25.981769054330925,
+    "right": 22.651031417831746
+  },
+  "normalized_agent_distance": {
+    "base": 0.8134660498339967,
+    "left": 0.3798009280801882,
+    "right": 0.4300157383708394
+  },
+  "q_score": {
+    "final": 0.75
+  },
+  "time": {
+    "simulator_steps": 6799,
+    "simulator_time": 226.63333333333333,
+    "normalized_time": 0.6665914105015444
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "task": "dispose_of_glass",
+  "instance_id": 309,
+  "rollout_id": 0,
+  "steps": 11229,
+  "success": true,
+  "agent_distance": {
+    "base": 21.119708409764815,
+    "left": 51.225740611545916,
+    "right": 52.60006890261138
+  },
+  "normalized_agent_distance": {
+    "base": 0.8582457507613784,
+    "left": 0.31240543931526865,
+    "right": 0.29995207856499045
+  },
+  "q_score": {
+    "final": 1.0
+  },
+  "time": {
+    "simulator_steps": 11229,
+    "simulator_time": 374.3,
+    "normalized_time": 0.8188912636922255
+  }
+}

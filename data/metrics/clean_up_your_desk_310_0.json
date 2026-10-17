@@ -1,0 +1,25 @@
+{
+  "task": "clean_up_your_desk",
+  "instance_id": 310,
+  "rollout_id": 0,
+  "steps": 32127,
+  "success": false,
+  "agent_distance": {
+    "base": 19.69922570840322,
+    "left": 56.61222352468178,
+    "right": 76.8498703878995
+  },
+  "normalized_agent_distance": {
+    "base": 3.0718313955957535,
+    "left": 0.6743896922429634,
+    "right": 0.4628361742247069
+  },
+  "q_score": {
+    "final": 0.0
+  },
+  "time": {
+    "simulator_steps": 32127,
+    "simulator_time": 1070.9,
+    "normalized_time": 0.6666627758583124
+  }
+}

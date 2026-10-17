@@ -1,0 +1,25 @@
+{
+  "task": "wash_dog_toys",
+  "instance_id": 302,
+  "rollout_id": 0,
+  "steps": 16835,
+  "success": false,
+  "agent_distance": {
+    "base": 4.090720786810298,
+    "left": 40.338413017470884,
+    "right": 41.68199973777337
+  },
+  "normalized_agent_distance": {
+    "base": 11.38733304658571,
+    "left": 0.3967062361394632,
+    "right": 0.38103258240767934
+  },
+  "q_score": {
+    "final": 0.0
+  },
+  "time": {
+    "simulator_steps": 16835,
+    "simulator_time": 561.1666666666666,
+    "normalized_time": 0.6666349866349865
+  }
+}

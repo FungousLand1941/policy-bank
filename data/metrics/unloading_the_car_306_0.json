@@ -1,0 +1,25 @@
+{
+  "task": "unloading_the_car",
+  "instance_id": 306,
+  "rollout_id": 0,
+  "steps": 16986,
+  "success": false,
+  "agent_distance": {
+    "base": 5.831888754839554,
+    "left": 32.804961174673736,
+    "right": 49.675013145235425
+  },
+  "normalized_agent_distance": {
+    "base": 5.779602701102504,
+    "left": 0.5575559106017418,
+    "right": 0.41650114796163773
+  },
+  "q_score": {
+    "final": 0.0
+  },
+  "time": {
+    "simulator_steps": 16986,
+    "simulator_time": 566.2,
+    "normalized_time": 0.6666331096196868
+  }
+}

@@ -2,6 +2,7 @@
 """Write ``site/data/results.json`` (everything the website renders) and ``results/summary.json``."""
 from __future__ import annotations
 
+import csv
 import json
 import random
 import shutil
@@ -13,7 +14,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from policybank import data as D  # noqa: E402
-from policybank.analysis import summarize  # noqa: E402
+from policybank.analysis import FREEZE_UTC, STAGE1_START_UTC, summarize  # noqa: E402
 
 
 def r(x, n=4):
@@ -24,9 +25,20 @@ def main():
     s = summarize()
     policies = D.load_policies()
     dev = D.load_dev(selection_only=True)
+    stage = {t["task_id"]: t["stage"] for t in D.load_route()["tasks"]}
+    finished = {}
+    with D._path("dev_rollouts.csv", None).open(encoding="utf-8", newline="") as f:
+        for row in csv.DictReader(f):
+            finished[(row["run"], int(row["task_id"]), int(row["instance"]), row["policy"])] = row["finished_utc"]
+    # Evidence as it stood when each task's route froze (stage 1: before its reported runs began).
     cell = defaultdict(lambda: defaultdict(list))
+    later = defaultdict(int)
     for e in dev:
-        cell[e.task_id][e.policy].append(e.q)
+        cutoff = FREEZE_UTC if stage[e.task_id] == 2 else STAGE1_START_UTC
+        if finished[(e.run, e.task_id, e.instance, e.policy)] <= cutoff:
+            cell[e.task_id][e.policy].append(e.q)
+        else:
+            later[e.task_id] += 1
 
     own_n = s["calibration_breakdown"]["own_dev_n"]
     rng = random.Random(0)
@@ -47,6 +59,7 @@ def main():
             "qs": t["q_by_instance"], "q_ci95": task_ci(t["q_by_instance"]), "successes": t["successes"],
             "own_dev_n": own_n[t["id"]] if t["id"] in own_n else own_n[str(t["id"])],
             "dev": {p: {"n": len(v), "mean": r(sum(v) / len(v), 3)} for p, v in sorted(cell[t["id"]].items())},
+            "dev_after_freeze": later[t["id"]],
         })
 
     out = {
@@ -76,6 +89,9 @@ def main():
             "curve": {str(m): {k: {kk: r(vv) for kk, vv in v.items()} for k, v in c.items()}
                       for m, c in s["simulation"]["curve"].items()},
             "observed": {k: r(v) if isinstance(v, float) else v for k, v in s["simulation"]["observed"].items()},
+            "zero_c": r(s["simulation"]["zero_c"], 2), "zero_share_official": r(s["simulation"]["zero_share_official"], 3),
+            "zero_share_dev": r(s["simulation"]["zero_share_dev"], 3),
+            "template_rollouts": s["simulation"]["template_rollouts"],
         },
         "policies": [{**p, "q_mean": r(p["q_mean"]), "task_points": r(p["task_points"], 3),
                       "expected_mean": r(p["expected_mean"], 3), **{

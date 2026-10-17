@@ -1,0 +1,25 @@
+{
+  "task": "assembling_gift_baskets",
+  "instance_id": 304,
+  "rollout_id": 0,
+  "steps": 39091,
+  "success": false,
+  "agent_distance": {
+    "base": 35.960640468032466,
+    "left": 141.63621198354303,
+    "right": 136.9711829417829
+  },
+  "normalized_agent_distance": {
+    "base": 2.216542835794524,
+    "left": 0.2841794441994589,
+    "right": 0.2817716775973522
+  },
+  "q_score": {
+    "final": 0.25
+  },
+  "time": {
+    "simulator_steps": 39091,
+    "simulator_time": 1303.0333333333333,
+    "normalized_time": 0.666651019416234
+  }
+}

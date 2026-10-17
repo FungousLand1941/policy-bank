@@ -1,0 +1,25 @@
+{
+  "task": "halve_an_egg",
+  "instance_id": 304,
+  "rollout_id": 0,
+  "steps": 9566,
+  "success": false,
+  "agent_distance": {
+    "base": 15.826700539321067,
+    "left": 44.3839914152486,
+    "right": 43.2107982558955
+  },
+  "normalized_agent_distance": {
+    "base": 0.8886438436778137,
+    "left": 0.3728213590613438,
+    "right": 0.36160637226525083
+  },
+  "q_score": {
+    "final": 0.0
+  },
+  "time": {
+    "simulator_steps": 9566,
+    "simulator_time": 318.8666666666667,
+    "normalized_time": 0.6666360025088857
+  }
+}

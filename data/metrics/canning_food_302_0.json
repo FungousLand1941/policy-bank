@@ -1,0 +1,25 @@
+{
+  "task": "canning_food",
+  "instance_id": 302,
+  "rollout_id": 0,
+  "steps": 34464,
+  "success": false,
+  "agent_distance": {
+    "base": 28.224760352957205,
+    "left": 79.39893321115753,
+    "right": 88.44366728370302
+  },
+  "normalized_agent_distance": {
+    "base": 2.284940569681151,
+    "left": 0.5789662170617195,
+    "right": 0.5200044436474256
+  },
+  "q_score": {
+    "final": 0.0
+  },
+  "time": {
+    "simulator_steps": 34464,
+    "simulator_time": 1148.8,
+    "normalized_time": 0.6666518686165275
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "task": "thawing_frozen_food",
+  "instance_id": 305,
+  "rollout_id": 0,
+  "steps": 12345,
+  "success": false,
+  "agent_distance": {
+    "base": 37.097031049020735,
+    "left": 59.11520756153914,
+    "right": 67.56645946301978
+  },
+  "normalized_agent_distance": {
+    "base": 0.47048509022019785,
+    "left": 0.12350290730857602,
+    "right": 0.3407815087987876
+  },
+  "q_score": {
+    "final": 0.2222222222222222
+  },
+  "time": {
+    "simulator_steps": 12345,
+    "simulator_time": 411.5,
+    "normalized_time": 0.6666358849736737
+  }
+}

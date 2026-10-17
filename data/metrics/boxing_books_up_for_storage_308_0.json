@@ -1,0 +1,25 @@
+{
+  "task": "boxing_books_up_for_storage",
+  "instance_id": 308,
+  "rollout_id": 0,
+  "steps": 36342,
+  "success": false,
+  "agent_distance": {
+    "base": 23.14819784039981,
+    "left": 101.19091797280635,
+    "right": 98.18462724628898
+  },
+  "normalized_agent_distance": {
+    "base": 3.12205729786314,
+    "left": 0.2574410878158133,
+    "right": 0.24922944340988876
+  },
+  "q_score": {
+    "final": 0.0
+  },
+  "time": {
+    "simulator_steps": 36342,
+    "simulator_time": 1211.4,
+    "normalized_time": 0.6666529084805459
+  }
+}

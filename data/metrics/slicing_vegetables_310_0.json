@@ -1,0 +1,25 @@
+{
+  "task": "slicing_vegetables",
+  "instance_id": 310,
+  "rollout_id": 0,
+  "steps": 22268,
+  "success": false,
+  "agent_distance": {
+    "base": 22.560389149300427,
+    "left": 76.09448838111712,
+    "right": 81.37581703394062
+  },
+  "normalized_agent_distance": {
+    "base": 1.8011391439699536,
+    "left": 0.23321925644753863,
+    "right": 0.27613117531745257
+  },
+  "q_score": {
+    "final": 0.2222222222222222
+  },
+  "time": {
+    "simulator_steps": 22268,
+    "simulator_time": 742.2666666666667,
+    "normalized_time": 0.6666490030537093
+  }
+}

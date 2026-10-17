@@ -1,0 +1,25 @@
+{
+  "task": "chopping_wood",
+  "instance_id": 303,
+  "rollout_id": 0,
+  "steps": 16128,
+  "success": false,
+  "agent_distance": {
+    "base": 15.48374626434321,
+    "left": 44.77447736934687,
+    "right": 42.696422295317916
+  },
+  "normalized_agent_distance": {
+    "base": 2.4431878018510442,
+    "left": 0.41380270834125576,
+    "right": 0.3883674347538569
+  },
+  "q_score": {
+    "final": 0.0
+  },
+  "time": {
+    "simulator_steps": 16128,
+    "simulator_time": 537.6,
+    "normalized_time": 0.6666657366071429
+  }
+}

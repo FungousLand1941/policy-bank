@@ -1,0 +1,25 @@
+{
+  "task": "rearrange_your_room",
+  "instance_id": 308,
+  "rollout_id": 0,
+  "steps": 19283,
+  "success": false,
+  "agent_distance": {
+    "base": 18.29364128297952,
+    "left": 69.92592869958753,
+    "right": 64.80140616236531
+  },
+  "normalized_agent_distance": {
+    "base": 1.3134618542212122,
+    "left": 0.26571545556190235,
+    "right": 0.2894566817424035
+  },
+  "q_score": {
+    "final": 0.3333333333333333
+  },
+  "time": {
+    "simulator_steps": 19283,
+    "simulator_time": 642.7666666666667,
+    "normalized_time": 0.6666470466213763
+  }
+}
