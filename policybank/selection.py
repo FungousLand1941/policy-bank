@@ -11,18 +11,20 @@ Two prior constructions are provided:
   per-task scores of a released checkpoint), scaled by a transfer factor estimated from our
   own development rollouts on *other* tasks;
 * :func:`flat_level_prior` for tasks with no reference: a policy-level score estimated from
-  the policy's rollouts on other tasks, paired against a reference policy and shrunk toward its
-  family, widened by the between-task spread.
+  the policy's rollouts on other tasks, paired against a reference policy, shrunk toward a weak
+  hyperprior and widened by the between-task spread.
 
-This module is a clean reimplementation of the selection logic used for the frozen route.
-The frozen decisions themselves are recorded in ``data/route.json``.
+This module is a clean reimplementation of the selection logic used for the frozen route.  The
+original pipeline additionally pooled each level with the other members of its checkpoint
+family; the reimplementation uses the hyperprior only.  The frozen decisions themselves are
+recorded in ``data/route.json``.
 """
 from __future__ import annotations
 
 import math
 from collections import defaultdict
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
-from typing import Iterable, Mapping, Sequence
 
 from .data import Episode
 
@@ -31,6 +33,10 @@ from .data import Episode
 class Gaussian:
     mean: float
     sd: float
+
+    def __post_init__(self):
+        if not (math.isfinite(self.mean) and math.isfinite(self.sd) and self.sd > 0):
+            raise ValueError(f"Gaussian needs a finite mean and a positive finite sd, got {self.mean}, {self.sd}")
 
     @property
     def precision(self) -> float:
@@ -56,6 +62,9 @@ def combine(*estimates: Gaussian) -> Gaussian:
     """Precision-weighted combination of independent Gaussian estimates."""
     p = sum(e.precision for e in estimates)
     return Gaussian(sum(e.precision * e.mean for e in estimates) / p, math.sqrt(1.0 / p))
+
+
+HYPERPRIOR = Gaussian(0.1, 0.1)   # weak prior on a policy level with no paired evidence
 
 
 # --------------------------------------------------------------------------- priors
@@ -85,10 +94,10 @@ def estimate_transfer_factor(own: Mapping[int, Sequence[float]], reference: Mapp
     x = [sum(own[t]) / len(own[t]) for t in tasks]
     r = [reference[t] for t in tasks]
     ratio = sum(x) / sum(r)
-    resid = [xi - ratio * ri for xi, ri in zip(x, r)]
+    resid = [xi - ratio * ri for xi, ri in zip(x, r, strict=True)]
     n = len(tasks)
     se = math.sqrt(sum(e * e for e in resid) / (n - 1) / n) / (sum(r) / n)
-    return Gaussian(ratio, se)
+    return Gaussian(ratio, max(se, 1e-3))   # a perfect fit is not certainty
 
 
 def per_task_scores(rows: Iterable[Episode]) -> dict[str, dict[int, list[float]]]:
@@ -125,7 +134,7 @@ def paired_level(candidate: Mapping[int, Sequence[float]], reference: Mapping[in
     return Gaussian(max(0.0, ref.mean + md), se)
 
 
-def flat_level_prior(level: Gaussian | None, shrink_to: Gaussian = Gaussian(0.1, 0.1),
+def flat_level_prior(level: Gaussian | None, shrink_to: Gaussian = HYPERPRIOR,
                      between_task_sd: float = 0.1) -> Gaussian:
     """Task prior from a policy level: shrink the level, then widen by the between-task spread."""
     lv = shrink_to if level is None else combine(level, shrink_to)
@@ -163,6 +172,9 @@ class Rules:
     min_shared: int = 2
     switch_margin: float = 0.01
     veto_ref_above: float | None = 0.1
+
+
+STRICT = Rules()
 
 
 @dataclass
@@ -204,7 +216,7 @@ def _by_instance(rows: Iterable[Episode]) -> dict[int, list[float]]:
 
 
 def decide(task_id: int, fallback: str, priors: Mapping[str, Gaussian], dev: Sequence[Episode],
-           noise: Mapping[str, float], rules: Rules = Rules(), guarded: bool = True) -> Decision:
+           noise: Mapping[str, float], rules: Rules = STRICT, guarded: bool = True) -> Decision:
     """Choose a policy for one task.
 
     ``guarded`` applies the incumbent-protecting rules (own rollouts and the dev guard).  With
@@ -253,18 +265,16 @@ def decide(task_id: int, fallback: str, priors: Mapping[str, Gaussian], dev: Seq
 
 
 def one_per_family(decisions: Sequence[Decision], family: Mapping[str, str]) -> dict[str, str]:
-    """Pick a single member per checkpoint family by total posterior gain over the fallbacks.
+    """Quick heuristic: map each chosen policy to the family member with the largest gain.
 
-    Serving one image per family member multiplies disk and qualification cost; when two
-    checkpoints of the same family win different tasks, keep the one with the larger summed
-    gain (in task points) and route the other's tasks to it.
+    The gain of a member is its posterior gain over the fallback summed over the tasks it
+    *won*.  :func:`select_by_level` uses the exact version instead (it re-decides the route for
+    every possible keeper and keeps the one with the highest total expected score); this helper
+    is kept for quick inspection of a set of decisions.
     """
     gain: dict[str, float] = defaultdict(float)
     for d in decisions:
-        fb = d.expected(d.fallback)
-        for c in d.candidates:
-            if c.eligible or c.policy == d.fallback:
-                gain[c.policy] += max(0.0, c.posterior.mean - fb)
+        gain[d.choice] += max(0.0, d.expected() - d.expected(d.fallback))
     chosen = {d.choice for d in decisions}
     keep: dict[str, str] = {}
     by_fam: dict[str, list[str]] = defaultdict(list)
@@ -279,15 +289,17 @@ def one_per_family(decisions: Sequence[Decision], family: Mapping[str, str]) -> 
 
 def select_by_level(tasks: Sequence[int], dev: Sequence[Episode], reference: str,
                     generalists: Sequence[str], specialists: Sequence[str] = (),
-                    family: Mapping[str, str] | None = None, rules: Rules = Rules(),
+                    family: Mapping[str, str] | None = None, rules: Rules = STRICT,
                     min_policy_rollouts: int = 2) -> list[Decision]:
     """Route tasks that have no public reference scores (tasks 50-99 in the frozen route).
 
     Generalists are candidates on every task.  A specialist is a candidate only on tasks where
     it has its own development rollouts, and only if it has at least ``min_policy_rollouts`` in
     total.  Priors come from :func:`paired_level` against ``reference`` with the task left out.
-    The highest eligible posterior wins (``guarded=False``); a second pass keeps one checkpoint
-    per family and re-decides the tasks of the family members that were dropped.
+    The highest eligible posterior wins (``guarded=False``).  Then, while some family has more
+    than one member in the route, every possible keeper of that family is tried: all its siblings
+    are removed, every task is re-decided, and the keeper whose route has the highest total
+    expected score wins.  The reference policy is never removed.
     """
     family = dict(family or {})
     scores = per_task_scores(dev)
@@ -307,11 +319,27 @@ def select_by_level(tasks: Sequence[int], dev: Sequence[Episode], reference: str
         return out
 
     noise = {p: noise_variance(scores.get(p, {})) for p in pool}
+
+    def decide_all(allowed: set[str]) -> list[Decision]:
+        return [decide(t, reference, priors_for(t, allowed), dev, noise, rules, guarded=False) for t in tasks]
+
+    families: dict[str, set[str]] = defaultdict(set)
+    for p in pool:
+        if p != reference and p in family:
+            families[family[p]].add(p)
     allowed = set(pool)
-    first = [decide(t, reference, priors_for(t, allowed), dev, noise, rules, guarded=False) for t in tasks]
-    keep = one_per_family(first, family)
-    dropped = {p for p, w in keep.items() if p != w}
-    if not dropped:
-        return first
-    allowed -= dropped
-    return [decide(t, reference, priors_for(t, allowed), dev, noise, rules, guarded=False) for t in tasks]
+    decisions = decide_all(allowed)
+    while True:
+        chosen = {d.choice for d in decisions}
+        crowded = [m & allowed for m in families.values() if len(m & allowed & chosen) > 1]
+        if not crowded:
+            return decisions
+        members = crowded[0]
+        best = None
+        for keeper in sorted(members & chosen):
+            trial = allowed - (members - {keeper})
+            ds = decide_all(trial)
+            value = sum(d.expected() for d in ds)
+            if best is None or value > best[0]:
+                best = (value, trial, ds)
+        _, allowed, decisions = best

@@ -1,0 +1,112 @@
+{
+ "pt50": {
+  "family": "comet",
+  "display": "Comet π0.5 pt50",
+  "kind": "public",
+  "source": "sunshk/openpi_comet",
+  "revision": "61739ffbced89dd5ba1b87c30d93d6084b79b0af",
+  "subfolder": "pi05-b1kpt50-cs32",
+  "replay": 32,
+  "lineage": "π0.5 (OpenPI) post-trained by Team Comet on BEHAVIOR-1K demonstrations (2025 challenge, 2nd place).",
+  "license_status": "Code Apache-2.0; separate weight grant not found (scope unresolved)."
+ },
+ "pt12": {
+  "family": "comet",
+  "display": "Comet π0.5 pt12",
+  "kind": "public",
+  "source": "sunshk/openpi_comet",
+  "revision": "61739ffbced89dd5ba1b87c30d93d6084b79b0af",
+  "subfolder": "pi05-b1kpt12-cs32",
+  "replay": 32,
+  "lineage": "Sibling Comet π0.5 checkpoint released with pt50.",
+  "license_status": "Code Apache-2.0; separate weight grant not found (scope unresolved)."
+ },
+ "s150997": {
+  "family": "comet",
+  "display": "pt50 + 2026 demos (ours)",
+  "kind": "ours",
+  "source": "KANR continued training",
+  "revision": "step 150997",
+  "subfolder": "",
+  "replay": 32,
+  "lineage": "Our continued training of Comet pt50 on the 2026 demonstrations of all 100 tasks.",
+  "license_status": "Derivative of pt50; inherits the pt50 terms."
+ },
+ "comet@ymetz9999": {
+  "family": "comet",
+  "display": "ymetz pt50 step 9999",
+  "kind": "public",
+  "source": "ymetz/pi05-b1k-pt50-steps-public",
+  "revision": "20e80d254069f318196db7fb91865bdb647f549b",
+  "subfolder": "steps-cont-9999",
+  "replay": 32,
+  "lineage": "Public continuation of pt50 on the 2026 demos with task/skill/step prompts.",
+  "license_status": "Declared to follow the base checkpoint and OpenPI terms."
+ },
+ "winner1": {
+  "family": "winner",
+  "display": "2025 winner ckpt 1",
+  "kind": "public",
+  "source": "IliaLarchenko/behavior_submission",
+  "revision": "89545bc1b7aa7f2e687bc0032d091f132d715d4e",
+  "subfolder": "checkpoint_1",
+  "replay": 20,
+  "lineage": "2025 BEHAVIOR Challenge winning solution (Larchenko, Zarin, Karnatak), native wrapper with correction rules.",
+  "license_status": "Apache-2.0 declared by the publisher at this revision."
+ },
+ "winner2": {
+  "family": "winner",
+  "display": "2025 winner ckpt 2",
+  "kind": "public",
+  "source": "IliaLarchenko/behavior_submission",
+  "revision": "89545bc1b7aa7f2e687bc0032d091f132d715d4e",
+  "subfolder": "checkpoint_2",
+  "replay": 20,
+  "lineage": "2025 BEHAVIOR Challenge winning solution, checkpoint 2.",
+  "license_status": "Apache-2.0 declared by the publisher at this revision."
+ },
+ "winner3": {
+  "family": "winner",
+  "display": "2025 winner ckpt 3",
+  "kind": "public",
+  "source": "IliaLarchenko/behavior_submission",
+  "revision": "89545bc1b7aa7f2e687bc0032d091f132d715d4e",
+  "subfolder": "checkpoint_3",
+  "replay": 20,
+  "lineage": "2025 BEHAVIOR Challenge winning solution, checkpoint 3.",
+  "license_status": "Apache-2.0 declared by the publisher at this revision."
+ },
+ "winner4": {
+  "family": "winner",
+  "display": "2025 winner ckpt 4",
+  "kind": "public",
+  "source": "IliaLarchenko/behavior_submission",
+  "revision": "89545bc1b7aa7f2e687bc0032d091f132d715d4e",
+  "subfolder": "checkpoint_4",
+  "replay": 20,
+  "lineage": "2025 BEHAVIOR Challenge winning solution, checkpoint 4.",
+  "license_status": "Apache-2.0 declared by the publisher at this revision."
+ },
+ "w100@j_jl_4task100": {
+  "family": "winner100",
+  "display": "JackLiu 4-task specialist",
+  "kind": "public",
+  "source": "JackLiu0406/b1k-checkpoints",
+  "revision": "ec1844b09fa2b259f131e9078896742404d5cbfd",
+  "subfolder": "pi_behavior_100t_meta_ft_4task",
+  "replay": 20,
+  "lineage": "Winner-format model fine-tuned for four 2026 tasks (54, 56, 77, 98).",
+  "license_status": "Apache-2.0 declared by the publisher at this revision."
+ },
+ "w100@b_amy_t90": {
+  "family": "winner100",
+  "display": "amyjia specialist (t90)",
+  "kind": "public",
+  "source": "amyjia1212/b1k-2026-t90-91-93-96-97",
+  "revision": "7519e44670b9c589ed8fe3ce65a5a17583ae9cff",
+  "subfolder": "step_099999",
+  "replay": 20,
+  "lineage": "Winner-format specialist published for tasks 90, 91, 93, 96 and 97.",
+  "license_status": "Public and ungated; no licence stated by the publisher."
+ }
+}

@@ -26,8 +26,12 @@ import csv
 import hashlib
 import json
 import re
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from policybank.routing import Route  # noqa: E402
 
 # Replay length actually executed per policy family (actions replayed per model query).
 FAMILY_REPLAY = {"comet": 32, "winner": 20, "winner100": 20}
@@ -276,6 +280,7 @@ def main():
         "schema": "policy-bank-route/1",
         "stage2_frozen_utc": STAGE2_FROZEN_UTC,
         "manifest_built_utc": source["built_utc"],
+        "route_sha256": Route.from_json({"tasks": route}).sha256,
         "stage1_table_sha256": source["route_sha256"],
         "stage2_table_sha256": source["route2_sha256"],
         "tasks": route,

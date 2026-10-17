@@ -13,7 +13,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib.lines import Line2D  # noqa: E402
-from matplotlib.patches import FancyBboxPatch, Patch  # noqa: E402
+from matplotlib.patches import Patch  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "paper" / "figures"
@@ -129,7 +129,7 @@ def fig_noise(s):
     ys = [pw[k] for k in pw]
     ax.plot(xs, ys, color=BLUE, linewidth=2, marker="o", markersize=4.5, markeredgecolor=SURFACE)
     ax.set_yscale("log")
-    for x_, y_ in zip(xs, ys):
+    for x_, y_ in zip(xs, ys, strict=True):
         ax.annotate(f"{y_:,}", (x_, y_), textcoords="offset points", xytext=(4, 3), fontsize=6.5, color=INK2)
     ax.set_xlabel("Difference in task score to detect")
     ax.set_ylabel("Rollouts per policy")

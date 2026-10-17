@@ -4,8 +4,7 @@ import pytest
 
 from policybank import data as D
 from policybank.data import Episode
-from policybank.metrics import (bootstrap_q, challenge_q, rollouts_for_effect, success_rate, task_means,
-                                within_task_sd)
+from policybank.metrics import bootstrap_q, challenge_q, rollouts_for_effect, success_rate, task_means, within_task_sd
 
 
 def ep(t, i, q, success=None):

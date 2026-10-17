@@ -9,8 +9,8 @@ from __future__ import annotations
 import hashlib
 import json
 from collections import defaultdict
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
-from typing import Iterable, Mapping
 
 from . import N_TASKS
 
@@ -24,12 +24,15 @@ class Route:
     assignments: Mapping[int, str]
 
     @classmethod
-    def from_json(cls, doc: Mapping) -> "Route":
+    def from_json(cls, doc: Mapping) -> Route:
         """Accept either ``{"tasks": [{"task_id", "policy"}, ...]}`` or ``{task_id: policy}``."""
-        if "tasks" in doc:
-            pairs = {int(t["task_id"]): str(t["policy"]) for t in doc["tasks"]}
-        else:
-            pairs = {int(k): str(v) for k, v in doc.items()}
+        items = ([(t["task_id"], t["policy"]) for t in doc["tasks"]] if "tasks" in doc
+                 else list(doc.items()))
+        pairs: dict[int, str] = {}
+        for k, v in items:
+            if int(k) in pairs:
+                raise RouteError(f"task {int(k)} is routed twice")
+            pairs[int(k)] = str(v)
         return cls(dict(sorted(pairs.items())))
 
     def canonical(self) -> bytes:
@@ -65,7 +68,7 @@ class Route:
             out[p].append(t)
         return {p: sorted(ts) for p, ts in sorted(out.items(), key=lambda kv: -len(kv[1]))}
 
-    def diff(self, other: "Route") -> dict[int, tuple[str | None, str | None]]:
+    def diff(self, other: Route) -> dict[int, tuple[str | None, str | None]]:
         keys = set(self.assignments) | set(other.assignments)
         return {t: (self.assignments.get(t), other.assignments.get(t)) for t in sorted(keys)
                 if self.assignments.get(t) != other.assignments.get(t)}

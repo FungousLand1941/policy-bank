@@ -4,8 +4,7 @@ from datetime import datetime, timedelta
 import pytest
 
 from policybank import data as D
-from policybank.provenance import (Attempt, AuditError, check_coverage, parse_metrics,
-                                   resolve_duplicates)
+from policybank.provenance import Attempt, AuditError, check_coverage, parse_metrics, resolve_duplicates
 from policybank.routing import Route, RouteError
 
 

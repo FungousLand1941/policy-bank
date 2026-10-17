@@ -4,9 +4,20 @@ import pytest
 
 from policybank.analysis import reproduce_stage2
 from policybank.data import Episode
-from policybank.selection import (Gaussian, Rules, combine, decide, estimate_transfer_factor,
-                                  flat_level_prior, noise_variance, one_per_family, paired_level,
-                                  policy_level, transfer_prior, update)
+from policybank.selection import (
+    Gaussian,
+    Rules,
+    combine,
+    decide,
+    estimate_transfer_factor,
+    flat_level_prior,
+    noise_variance,
+    one_per_family,
+    paired_level,
+    policy_level,
+    transfer_prior,
+    update,
+)
 
 
 def ep(task, inst, policy, q):

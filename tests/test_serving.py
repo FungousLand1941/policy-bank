@@ -5,8 +5,16 @@ import msgpack
 import numpy as np
 import pytest
 
-from policybank.serving import (CHUNK_KEY, ChunkExecutor, ContractError, ContractSpec, ScriptedPolicy,
-                                SessionContract, pack, unpack)
+from policybank.serving import (
+    CHUNK_KEY,
+    ChunkExecutor,
+    ContractError,
+    ContractSpec,
+    ScriptedPolicy,
+    SessionContract,
+    pack,
+    unpack,
+)
 from policybank.serving.server import PolicyServer
 
 
@@ -150,6 +158,7 @@ def test_server_serves_batches_and_resets():
 
 def test_server_fails_stop_on_contract_violation():
     import websockets
+
     from policybank.serving.client import PolicyClient
     with Running() as uri:
         c = PolicyClient(uri)
@@ -161,6 +170,7 @@ def test_server_fails_stop_on_contract_violation():
 
 def test_server_refuses_a_second_session():
     import websockets
+
     from policybank.serving.client import PolicyClient
     with Running() as uri:
         first = PolicyClient(uri)
@@ -177,6 +187,7 @@ class Exploding(ScriptedPolicy):
 
 def test_server_never_substitutes_actions_for_nonfinite_output():
     import websockets
+
     from policybank.serving.client import PolicyClient
     r = Running(Exploding(horizon=32))
     with r as uri:
@@ -184,3 +195,112 @@ def test_server_never_substitutes_actions_for_nonfinite_output():
         with pytest.raises(websockets.ConnectionClosedError):
             c.infer(np.zeros(61, np.float32), task_id=1)
     assert r.server.failed.is_set() and "nonfinite" in r.server.failure
+
+
+# ------------------------------------------------------------------ review regressions
+
+class EchoPolicy(ScriptedPolicy):
+    """Plans depend on each environment's own proprio, so batch mix-ups are visible."""
+
+    def plan(self, obs, n):
+        p = np.asarray(obs["robot_r1::proprio"]).reshape(n, -1)[:, :1]           # (n, 1)
+        steps = np.arange(self.horizon, dtype=np.float32)[None, :, None] / 1000
+        return np.broadcast_to(p[:, :, None] + steps, (n, self.horizon, self.action_dim)).astype(np.float32)
+
+
+class Sleepy(ScriptedPolicy):
+    def plan(self, obs, n):
+        import time
+        time.sleep(3)
+        return super().plan(obs, n)
+
+
+class Exploding2(ScriptedPolicy):
+    def plan(self, obs, n):
+        raise RuntimeError("cuda error: device-side assert")
+
+
+def test_batch_rows_keep_their_own_environment():
+    from policybank.serving.client import PolicyClient
+    with Running(EchoPolicy(horizon=32)) as uri, PolicyClient(uri) as c:
+        prop = np.stack([np.full(61, v, np.float32) for v in (1, 2, 3)])
+        out = c.infer(prop, task_id=0)
+        np.testing.assert_allclose(out["action"][:, 0], [1, 2, 3])
+        out = c.infer(prop, task_id=0)                                   # second chunk, same plan
+        np.testing.assert_allclose(out["action"][:, 0], [1.004, 2.004, 3.004], rtol=1e-6)
+
+
+def test_a_new_session_starts_from_a_fresh_plan():
+    from policybank.serving.client import PolicyClient
+    with Running() as uri:
+        with PolicyClient(uri) as c:
+            first = c.infer(np.zeros(61, np.float32), task_id=5)["action"][0]
+            c.infer(np.zeros(61, np.float32), task_id=5)
+        with PolicyClient(uri) as c:                                    # reconnect: no leaked queue
+            again = c.infer(np.zeros((2, 61), np.float32), task_id=5)
+            assert again["action"][0, 0] == first == 0.0
+
+
+def test_peer_disconnect_is_not_a_policy_failure():
+    from policybank.serving.client import PolicyClient
+    r = Running()
+    with r as uri:
+        c = PolicyClient(uri)
+        c.infer(np.zeros(61, np.float32), task_id=5)
+        c.ws.socket.close()                                              # abrupt drop, no close frame
+        import time
+        time.sleep(0.3)
+        with PolicyClient(uri) as c2:
+            assert c2.infer(np.zeros(61, np.float32), task_id=5)["action"].shape == (23,)
+    assert not r.server.failed.is_set() and r.code == 0
+
+
+def test_second_session_is_refused_and_first_survives():
+    import websockets
+
+    from policybank.serving.client import PolicyClient
+    with Running() as uri:
+        first = PolicyClient(uri)
+        with pytest.raises(websockets.ConnectionClosed) as e:
+            PolicyClient(uri)
+        assert e.value.rcvd.code == 1013
+        assert first.infer(np.zeros(61, np.float32), task_id=1)["action"].shape == (23,)
+        first.close()
+
+
+def test_hung_model_times_out_and_serve_returns_promptly():
+    import time
+
+    import websockets
+
+    from policybank.serving.client import PolicyClient
+    r = Running(Sleepy(horizon=32), query_timeout_s=0.5)
+    t0 = time.monotonic()
+    with r as uri:
+        c = PolicyClient(uri)
+        with pytest.raises(websockets.ConnectionClosedError) as e:
+            c.infer(np.zeros(61, np.float32), task_id=1)
+        assert e.value.rcvd.code == 1011
+    assert time.monotonic() - t0 < 2.5            # did not wait for the 3 s sleep
+    assert r.code == 1 and "exceeded 0.5 s" in r.server.failure
+
+
+def test_model_exception_is_terminal_and_health_turns_red():
+    import urllib.error
+    import urllib.request
+
+    import websockets
+
+    from policybank.serving.client import PolicyClient
+    r = Running(Exploding2(horizon=32))
+    with r as uri:
+        http_url = uri.replace("ws://", "http://") + "/healthz"
+        assert urllib.request.urlopen(http_url, timeout=5).status == 200
+        c = PolicyClient(uri)
+        with pytest.raises(websockets.ConnectionClosedError):
+            c.infer(np.zeros(61, np.float32), task_id=1)
+        # Fail-stop: health reports 503 until the listener closes, then the port refuses.
+        with pytest.raises(urllib.error.URLError) as e:
+            urllib.request.urlopen(http_url, timeout=5)
+        assert getattr(e.value, "code", 503) == 503
+    assert r.code == 1 and "device-side assert" in r.server.failure

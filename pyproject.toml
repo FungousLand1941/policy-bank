@@ -19,7 +19,7 @@ dependencies = ["numpy>=1.24", "msgpack>=1.0"]
 [project.optional-dependencies]
 serve = ["websockets>=13"]
 figures = ["matplotlib>=3.7"]
-dev = ["pytest>=7", "websockets>=13"]
+dev = ["pytest>=7", "websockets>=13", "ruff>=0.6"]
 
 [project.scripts]
 policybank = "policybank.cli:main"
@@ -29,3 +29,14 @@ include = ["policybank*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "B", "I", "UP"]
+ignore = ["E731"]
+
+[tool.ruff.lint.per-file-ignores]
+"tools/*" = ["E402", "E501"]

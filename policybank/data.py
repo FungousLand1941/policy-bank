@@ -3,10 +3,23 @@ from __future__ import annotations
 
 import csv
 import json
+import os
 from dataclasses import dataclass
 from pathlib import Path
 
-DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+
+def _default_data_dir() -> Path:
+    env = os.environ.get("POLICYBANK_DATA")
+    return Path(env) if env else Path(__file__).resolve().parent.parent / "data"
+
+
+DATA_DIR = _default_data_dir()
+
+
+def set_data_dir(path: Path | str) -> None:
+    """Point every loader (and the analyses built on them) at another dataset directory."""
+    global DATA_DIR
+    DATA_DIR = Path(path)
 
 
 @dataclass(frozen=True)
@@ -30,7 +43,12 @@ class Episode:
 
 
 def _path(name: str, data_dir: Path | None) -> Path:
-    return (data_dir or DATA_DIR) / name
+    p = (data_dir or DATA_DIR) / name
+    if not p.exists():
+        raise FileNotFoundError(
+            f"{p} not found. The dataset lives in the repository's data/ folder: run from a clone "
+            "(pip install -e .), pass --data DIR, or set POLICYBANK_DATA.")
+    return p
 
 
 def load_json(name: str, data_dir: Path | None = None):

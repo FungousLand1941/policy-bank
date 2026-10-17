@@ -60,7 +60,13 @@ def _decode(obj):
         dtype = _dtype(obj[b"dtype"])
         if dtype.kind not in _KINDS or dtype.itemsize > 8:
             raise ValueError("unsupported scalar dtype")
-        return dtype.type(obj[b"data"])
+        data = obj[b"data"]
+        if isinstance(data, (list, tuple, dict, bytes)):
+            raise ValueError("scalar marker carries a non-scalar payload")
+        value = dtype.type(data)
+        if np.ndim(value) != 0:
+            raise ValueError("scalar marker decoded to an array")
+        return value
     return obj
 
 

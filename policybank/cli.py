@@ -5,6 +5,7 @@ import argparse
 import asyncio
 import json
 import logging
+import os
 import sys
 
 from . import data as D
@@ -58,14 +59,54 @@ def cmd_analyze(a):
         print(json.dumps(s, indent=1, default=float))
 
 
+def cmd_verify(a):
+    import csv
+
+    from .provenance import verify_directory
+    names = [t["name"] for t in D.load_tasks()]
+    expected = None
+    if a.check_hashes:
+        with D._path("official_episodes.csv", None).open(encoding="utf-8", newline="") as f:
+            expected = {(r["task"], int(r["instance"])): r["sha256"] for r in csv.DictReader(f)}
+    rep = verify_directory(a.directory, names, expected)
+    print(f"{rep['files']} metrics files, coverage complete, Q = {rep['Q']:.6f}")
+    if expected is not None:
+        bad = rep["sha256_mismatches"]
+        print("all SHA-256 match the released ledger" if not bad else f"{len(bad)} files differ: {bad[:5]}")
+        if bad:
+            sys.exit(1)
+
+
+def cmd_simulate(a):
+    from .analysis import simulation_study
+    r = simulation_study(sims=a.sims, curve_sims=a.curve_sims, seed=a.seed)
+    print(f"posterior-predictive study, tasks 50-99, {a.sims} worlds, kappa={r['kappa']:.2f}")
+    print(f"{'rule':22s} {'true Q':>8s} {'90% range':>15s} {'claimed':>8s} {'optimism':>9s} {'regret':>7s}")
+    for name, v in r["rules"].items():
+        claimed = "-" if v["claimed"] is None else f"{v['claimed']:.3f}"
+        opt = "-" if v["optimism"] is None else f"{v['optimism']:+.3f}"
+        print(f"{name:22s} {v['true']:8.3f} {v['true_p05']:7.3f}-{v['true_p95']:.3f} {claimed:>8s} {opt:>9s} "
+              f"{v['regret']:7.3f}")
+    o = r["observed"]
+    print(f"observed: claimed {o['claimed']:.3f}, reported {o['realized']:.3f} "
+          f"(percentile {100 * o['reported_percentile']:.0f} of simulated reporting runs)")
+
+
 def cmd_serve(a):
     from .serving.contract import ContractSpec
     from .serving.executor import ScriptedPolicy
     from .serving.server import PolicyServer
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
-    policy = ScriptedPolicy(name=a.policy, horizon=a.replay)
+    if a.upstream:
+        from .serving.remote import OpenPIRemotePolicy
+        policy = OpenPIRemotePolicy(a.upstream, name=a.policy, horizon=a.replay)
+    else:
+        policy = ScriptedPolicy(name=a.policy, horizon=a.replay)
     server = PolicyServer(policy, ContractSpec(chunk=a.chunk), query_timeout_s=a.query_timeout)
-    sys.exit(asyncio.run(server.serve(a.host, a.port)))
+    code = asyncio.run(server.serve(a.host, a.port))
+    # A hung model thread cannot be joined; leave without waiting for it.
+    logging.shutdown()
+    os._exit(code)
 
 
 def main(argv=None):
@@ -85,7 +126,17 @@ def main(argv=None):
     s = sub.add_parser("analyze", help="every number in the paper, as JSON")
     s.add_argument("--out")
     s.set_defaults(fn=cmd_analyze)
-    s = sub.add_parser("serve", help="run the fail-stop server with a scripted stand-in policy")
+    s = sub.add_parser("verify", help="audit a folder of evaluator metrics files (coverage, format, hashes)")
+    s.add_argument("directory")
+    s.add_argument("--check-hashes", action="store_true", help="compare every file with the released SHA-256")
+    s.set_defaults(fn=cmd_verify)
+    s = sub.add_parser("simulate", help="posterior-predictive study of the selection rules (tasks 50-99)")
+    s.add_argument("--sims", type=int, default=300)
+    s.add_argument("--curve-sims", type=int, default=120)
+    s.add_argument("--seed", type=int, default=0)
+    s.set_defaults(fn=cmd_simulate)
+    s = sub.add_parser("serve", help="run the fail-stop server in front of a scripted or upstream policy")
+    s.add_argument("--upstream", help="ws:// URI of an OpenPI-compatible policy server (default: scripted)")
     s.add_argument("--policy", default="scripted")
     s.add_argument("--replay", type=int, default=32)
     s.add_argument("--chunk", type=int, default=4)
@@ -94,6 +145,8 @@ def main(argv=None):
     s.add_argument("--query-timeout", type=float, default=550.0)
     s.set_defaults(fn=cmd_serve)
     a = p.parse_args(argv)
+    if a.data is not None:
+        D.set_data_dir(a.data)
     a.fn(a)
 
 
