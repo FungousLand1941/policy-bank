@@ -8,7 +8,9 @@ authors:
   - given-names: Keshav
     family-names: Balakrishna
   - given-names: Abhijay
-    family-names: Gangerapu
+    family-names: Gangarapu
+  - given-names: Nishan
+    family-names: Mani
   - given-names: Rithik
     family-names: Satarla
 date-released: "2026-10-17"
@@ -19,7 +21,9 @@ preferred-citation:
     - given-names: Keshav
       family-names: Balakrishna
     - given-names: Abhijay
-      family-names: Gangerapu
+      family-names: Gangarapu
+    - given-names: Nishan
+      family-names: Mani
     - given-names: Rithik
       family-names: Satarla
   institution:

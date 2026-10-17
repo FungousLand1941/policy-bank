@@ -337,7 +337,7 @@ def write_images(D) -> None:
              fontsize=13, color=ink2)
     fig.text(0.05, 0.62, "Policy Bank: Development-Selected\nRouting of Public Robot Policies\nfor BEHAVIOR-1K",
              fontproperties=serif_b, fontsize=28, color=ink, linespacing=1.2, va="bottom")
-    fig.text(0.05, 0.545, "Keshav Balakrishna, Abhijay Gangerapu, Rithik Satarla", fontproperties=sans,
+    fig.text(0.05, 0.545, "Keshav Balakrishna, Abhijay Gangarapu, Nishan Mani, Rithik Satarla", fontproperties=sans,
              fontsize=15, color=ink2)
     fig.text(0.95, 0.80, f"Q = {fmt(hd['Q'], 'f3')}", fontproperties=sans_b, fontsize=36, color=ink, ha="right")
     fig.text(0.95, 0.735, f"95% CI {fmt(hd['Q_ci95'][0], 'f3')}–{fmt(hd['Q_ci95'][1], 'f3')}",

@@ -9,7 +9,7 @@
 **Development-selected routing of public robot policies for BEHAVIOR-1K.**
 This is Team KANR's technical report and code for the 2026 BEHAVIOR Challenge.
 
-Keshav Balakrishna · Abhijay Gangerapu · Rithik Satarla (Independent)
+Keshav Balakrishna · Abhijay Gangarapu · Nishan Mani · Rithik Satarla (Independent)
 
 [Paper (PDF)](paper/policy-bank.pdf) · [Project page](https://policy-bank.vercel.app) · [Data](data/)
 
@@ -177,7 +177,7 @@ ymetz; JackLiu0406; amyjia1212; the Stanford BEHAVIOR-1K team; TACC (Stampede3).
 ```bibtex
 @techreport{kanr2026policybank,
   title       = {Policy Bank: Development-Selected Routing of Public Robot Policies for {BEHAVIOR-1K}},
-  author      = {Balakrishna, Keshav and Gangerapu, Abhijay and Satarla, Rithik},
+  author      = {Balakrishna, Keshav and Gangarapu, Abhijay and Mani, Nishan and Satarla, Rithik},
   institution = {Team KANR (Independent)},
   year        = {2026},
   note        = {2026 BEHAVIOR Challenge technical report},
