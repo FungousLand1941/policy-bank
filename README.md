@@ -170,7 +170,11 @@ A non-root container image for the server lives in [`docker/`](docker/); CI buil
 Team Comet ([openpi-comet](https://github.com/mli0603/openpi-comet)); Physical Intelligence
 ([OpenPI](https://github.com/Physical-Intelligence/openpi), π0/π0.5); Google (PaliGemma/Gemma);
 Ilia Larchenko, Gleb Zarin and Akash Karnatak ([2025 winning solution](https://github.com/IliaLarchenko/behavior-1k-solution));
-ymetz; JackLiu0406; amyjia1212; the Stanford BEHAVIOR-1K team; TACC (Stampede3).
+ymetz; JackLiu0406; amyjia1212; and the Stanford BEHAVIOR-1K team.
+
+The authors acknowledge the Texas Advanced Computing Center (TACC) at The University of Texas at Austin
+for providing computational resources that have contributed to the research results reported within
+this paper. URL: http://www.tacc.utexas.edu. All simulator rollouts were run on TACC's Stampede3 system.
 
 ## Citation
 
